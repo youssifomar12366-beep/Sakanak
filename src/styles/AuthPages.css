@@ -1,0 +1,253 @@
+﻿.auth {
+  display: grid;
+  place-items: center;
+  min-height: 600px;
+}
+.auth > div {
+  max-width: 420px;
+  width: 100%;
+}
+.auth form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 28px;
+}
+.account-type {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 2px;
+}
+.account-type-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.account-type-heading h2 {
+  font-size: 17px;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+.account-type-heading span {
+  color: var(--muted);
+  font-size: 10px;
+}
+.role-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.role-card {
+  position: relative;
+  min-height: 170px;
+  padding: 16px 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--paper);
+  color: var(--ink);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s;
+}
+.role-card:hover {
+  transform: translateY(-2px);
+  border-color: #8eb5a2;
+}
+.role-card.selected {
+  border: 2px solid var(--green);
+  background: var(--mint);
+  padding: 15px 12px;
+}
+.role-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--mint);
+  color: var(--green);
+  display: grid;
+  place-items: center;
+}
+.role-card.selected .role-icon {
+  background: var(--green);
+  color: #fff;
+}
+.role-card strong {
+  font-size: 13px;
+}
+.role-card small {
+  font-size: 10px;
+  line-height: 1.55;
+  color: var(--muted);
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.role-indicator {
+  position: absolute;
+  right: 11px;
+  top: 11px;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: transparent;
+}
+.role-card.selected .role-indicator {
+  background: var(--green);
+  border-color: var(--green);
+}
+.role-error {
+  color: #a34f48;
+  font-size: 11px;
+  margin: 10px 0 0;
+}
+.app[dir="rtl"] .role-card {
+  text-align: right;
+  align-items: flex-start;
+}
+.app[dir="rtl"] .role-indicator {
+  right: auto;
+  left: 11px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.form-success {
+  color: #4d936d;
+  font-size: 12px;
+  margin: 0;
+}
+.form-field-label {
+  display: block;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+  margin-bottom: 0;
+}
+.form-field-label input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  outline: 0;
+  padding: 11px;
+  border-radius: 6px;
+}
+.form-field-label input[type="number"] {
+  appearance: textfield;
+}
+.image-uploader {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--paper);
+  padding: 14px;
+}
+.image-uploader-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.image-uploader-title h2 {
+  font-size: 16px;
+  margin: 0;
+}
+.image-uploader-title span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.upload-dropzone {
+  min-height: 145px;
+  border: 1px dashed #8eb5a2;
+  border-radius: 7px;
+  color: var(--green);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.upload-dropzone:hover,
+.upload-dropzone.dragging {
+  background: var(--mint);
+  border-color: var(--green);
+}
+.upload-dropzone strong {
+  font-size: 12px;
+  color: var(--ink);
+}
+.upload-dropzone small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.upload-dropzone input {
+  display: none;
+}
+.form-error {
+  color: #a34f48;
+  font-size: 11px;
+  margin: 0;
+}
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+.image-preview {
+  height: 88px;
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--mint);
+}
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.image-preview button {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 25px;
+  height: 25px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #23332fcc;
+  color: #fff;
+  cursor: pointer;
+}
+.main-image-badge {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  border-radius: 3px;
+  background: var(--green);
+  color: #fff;
+  padding: 3px 5px;
+  font-size: 8px;
+}
+

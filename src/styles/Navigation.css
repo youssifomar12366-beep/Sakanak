@@ -1,0 +1,198 @@
+﻿.nav > .logo {
+  font-size: 0;
+}
+.nav > .logo::after {
+  content: "سكنك";
+  font-size: 24px;
+}
+.nav .logo > a {
+  font-size: 0;
+}
+.nav .logo > a::after {
+  content: "سكنك";
+  font-size: 24px;
+}
+.nav nav a:hover {
+  transform: translateY(-1px);
+}
+.nav {
+  position: sticky;
+  top: 16px;
+  z-index: 60;
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  height: 76px;
+  max-width: 1280px;
+  margin: auto;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+.mobile-nav-link {
+  display: none;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 24px;
+}
+.logo span {
+  background: var(--green);
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px;
+  display: grid;
+}
+.logo b {
+  color: #c8785d;
+}
+.nav nav {
+  display: flex;
+  gap: 24px;
+  color: var(--muted);
+  font-size: 13px;
+  flex: 1;
+}
+.nav nav a:hover {
+  color: var(--green);
+}
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+footer .logo {
+  color: var(--ink);
+  margin-bottom: 15px;
+}
+.logout-link {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  padding: 12px;
+  cursor: pointer;
+}
+.logout-link:hover {
+  color: var(--green);
+}
+.app[dir="rtl"] .logout-link {
+  text-align: right;
+}
+.account-menu {
+  position: relative;
+}
+.account-trigger {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 22px;
+  padding: 4px 9px 4px 4px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+}
+.nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--peach);
+  color: #744d3d;
+  font-size: 10px;
+  font-weight: 800;
+}
+.account-name {
+  font-size: 11px;
+  max-width: 105px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-dropdown {
+  position: absolute;
+  right: 0;
+  top: 42px;
+  width: 205px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  box-shadow: var(--shadow);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  z-index: 12;
+}
+.account-dropdown strong {
+  font-size: 12px;
+}
+.account-dropdown small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.account-dropdown a,
+.account-dropdown button {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  text-align: left;
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.account-dropdown a {
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+  padding-top: 10px;
+}
+.account-dropdown button:hover,
+.account-dropdown a:hover {
+  color: var(--green);
+}
+.dashboard-action {
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.dashboard-action:hover {
+  background: var(--mint);
+  border-color: #10b981;
+  color: var(--green);
+  transform: scale(1.1);
+  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.16);
+}
+.dashboard-action:active {
+  transform: scale(0.95);
+}
+.dashboard-action:hover .dashboard-tooltip,
+.dashboard-action:focus-visible .dashboard-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+

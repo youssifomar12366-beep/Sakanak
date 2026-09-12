@@ -1,0 +1,212 @@
+﻿@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+@media (max-width: 850px) {
+  .nav {
+    padding: 0 20px;
+  }
+  .nav nav {
+    display: flex;
+    position: static;
+    min-width: 0;
+    gap: 12px;
+  }
+  .nav nav:not(.open) > a:not(.explore-link) {
+    display: none;
+  }
+  .nav nav.open {
+    position: absolute;
+    top: 68px;
+    left: 15px;
+    right: 15px;
+    padding: 15px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .mobile-nav-link {
+    display: block;
+    padding-top: 2px;
+    border-top: 1px solid var(--line);
+  }
+  .menu {
+    display: block;
+  }
+  .desktop {
+    display: none;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 45px 20px 65px;
+  }
+  .hero-image {
+    height: 350px;
+  }
+  .section,
+  .listing,
+  .details,
+  .auth,
+  .dashboard {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .listing-layout,
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+  .listing aside {
+    order: -1;
+  }
+  .booking {
+    position: relative;
+    order: -1;
+  }
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+  .dashboard aside {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+    flex-direction: row;
+    overflow: auto;
+  }
+  .dashboard aside a {
+    white-space: nowrap;
+  }
+  .steps {
+    gap: 20px;
+  }
+}
+@media (max-width: 520px) {
+  .nav {
+    height: 64px;
+  }
+  .icon {
+    font-size: 0;
+  }
+  .nav-buttons > .icon:first-child {
+    font-size: 11px;
+  }
+  .hero h1 {
+    font-size: 45px;
+  }
+  .search-box {
+    display: block;
+  }
+  .search-box label {
+    margin-bottom: 8px;
+  }
+  .search-box .hide {
+    display: none;
+  }
+  .search-box .price-field,
+  .search-box .beds-field {
+    min-width: 0;
+  }
+  .search-box .btn {
+    width: 100%;
+  }
+  .hero-image {
+    height: 290px;
+  }
+  .section-head {
+    display: block;
+  }
+  .section-head .outline {
+    margin-top: 15px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .how {
+    padding: 60px 20px;
+  }
+  .steps {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .owner {
+    margin: 20px;
+    padding: 35px 25px;
+  }
+  .footer {
+    padding-inline: 20px;
+  }
+  .gallery {
+    height: 290px;
+  }
+  .amenities {
+    grid-template-columns: 1fr 1fr;
+  }
+  .beds {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .room {
+    grid-template-columns: 1fr;
+  }
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stats div {
+    padding: 13px;
+  }
+  .stats b {
+    font-size: 22px;
+  }
+}
+@media (max-width: 520px) {
+  .role-cards {
+    grid-template-columns: 1fr;
+  }
+  .role-card {
+    min-height: 135px;
+  }
+}
+@media (max-width: 520px) {
+  .image-uploader-title {
+    display: block;
+  }
+  .image-uploader-title span {
+    display: block;
+    margin-top: 5px;
+  }
+  .image-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .image-preview {
+    height: 105px;
+  }
+}
+@media (max-width: 520px) {
+  .account-name {
+    display: none;
+  }
+  .account-trigger {
+    border: 0;
+    padding: 3px;
+  }
+  .account-dropdown {
+    right: -50px;
+  }
+  .workspace-actions {
+    justify-content: stretch;
+    margin-top: 15px;
+  }
+  .workspace-actions .btn {
+    width: 100%;
+  }
+}
+

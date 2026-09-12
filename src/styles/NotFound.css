@@ -1,0 +1,9 @@
+﻿.not-found {
+  min-height: 600px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 15px;
+  text-align: center;
+}
+

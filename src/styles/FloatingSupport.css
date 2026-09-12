@@ -1,0 +1,59 @@
+﻿.floating-support {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.support-button {
+  will-change: transform;
+}
+.support-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(35, 51, 47, 0.2);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.support-button:hover,
+.support-button:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(35, 51, 47, 0.26);
+  outline: 0;
+}
+.whatsapp-support {
+  background: #10b981;
+}
+.email-support {
+  background: #dc2626;
+}
+.support-tooltip {
+  position: absolute;
+  left: 58px;
+  white-space: nowrap;
+  background: var(--ink);
+  color: var(--cream);
+  border-radius: 5px;
+  padding: 6px 9px;
+  font-size: 11px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-5px);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+.support-button:hover .support-tooltip,
+.support-button:focus-visible .support-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+

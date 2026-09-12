@@ -1,0 +1,38 @@
+﻿footer {
+	border-top: 1px solid var(--line);
+	padding: 45px max(28px, calc((100% - 1225px) / 2));
+	color: var(--muted);
+	font-size: 12px;
+}
+footer .logo {
+	color: var(--ink);
+	margin-bottom: 15px;
+}
+footer small {
+	display: block;
+	margin-top: 30px;
+}
+.developer-credit {
+	color: #10b981;
+	font-weight: 700;
+}
+.footer-how-link {
+	display: block;
+	border: 0;
+	background: transparent;
+	color: var(--muted);
+	font: inherit;
+	font-size: 12px;
+	padding: 0;
+	margin: 0 0 10px;
+	cursor: pointer;
+	text-align: left;
+	transition:
+		color 0.2s ease,
+		transform 0.2s ease;
+}
+.footer-how-link:hover {
+	color: var(--green);
+	transform: translateY(-1px);
+}
+

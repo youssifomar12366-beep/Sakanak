@@ -1,0 +1,55 @@
+﻿.location-input {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+.location-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green);
+}
+.location-control input {
+  flex: 1;
+  min-width: 0;
+}
+.location-control button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  padding: 2px;
+  cursor: pointer;
+}
+.suggestions {
+  position: absolute;
+  z-index: 15;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  box-shadow: var(--shadow);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.suggestions button {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: start;
+  padding: 9px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.suggestions button:hover,
+.suggestions button:focus {
+  background: var(--mint);
+  outline: 0;
+}
+

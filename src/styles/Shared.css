@@ -1,0 +1,158 @@
+﻿.btn,
+.outline,
+.light,
+.icon,
+.menu,
+.heart,
+.round,
+.account-trigger,
+.logout-link,
+.nav nav a,
+.account-dropdown a,
+.account-dropdown button {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.btn {
+  cursor: pointer;
+}
+.btn:hover {
+  background: #059669;
+  box-shadow: 0 8px 16px rgba(5, 150, 105, 0.2);
+}
+.btn:active,
+.outline:active,
+.light:active {
+  transform: scale(0.95);
+}
+.outline:hover {
+  background: #f3f4f6;
+  border-color: #10b981;
+}
+.light:hover {
+  background: #ecfdf5;
+  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.18);
+}
+.icon:hover,
+.menu:hover,
+.heart:hover,
+.round:hover {
+  transform: scale(1.1);
+  color: var(--green);
+}
+.icon:active,
+.menu:active,
+.heart:active,
+.round:active,
+.support-button:active {
+  transform: scale(0.9);
+}
+.icon,
+.menu {
+  border: 0;
+  background: none;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.icon {
+  font-size: 11px;
+}
+.menu {
+  display: none;
+}
+.btn,
+.outline,
+.light {
+  border: 0;
+  border-radius: 8px;
+  background: var(--green);
+  color: #fff;
+  padding: 12px 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sign {
+  font-size: 13px;
+}
+.outline {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.row h3 {
+  font-size: 16px;
+  margin: 0;
+}
+.muted {
+  color: var(--muted);
+  font-size: 12px;
+}
+.light {
+  background: #fff;
+  color: var(--green);
+  margin-top: 15px;
+}
+.back {
+  color: var(--muted);
+  font-size: 13px;
+}
+.wide {
+  width: 100%;
+  margin-top: 14px;
+}
+.close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  background: none;
+  border: 0;
+  color: var(--muted);
+}
+.success {
+  background: var(--mint);
+  color: var(--green);
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  margin-bottom: 18px;
+}
+.price-inputs {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+  margin-top: 4px;
+}
+.price-inputs input,
+.price-inputs select {
+  min-width: 0;
+  width: 50%;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 7px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 11px;
+}
+.sidebar-price {
+  margin-bottom: 6px;
+}
+
