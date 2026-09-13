@@ -1,3 +1,4 @@
+
 export const AMENITIES_LIST = [
   { id: "wifi", label: { en: "WiFi", ar: "واي فاي" } },
   { id: "air-conditioning", label: { en: "Air conditioning", ar: "تكييف" } },
