@@ -65,7 +65,7 @@ export function Home() {
         </div>
       </section>
       <section id="how-it-works" className="how">
-        <small>{t("noStressNest")}</small>
+        <small>{t("noStressSakanak")}</small>
         <h2>{t("simpleStudentLiving")}</h2>
         <div className="steps">
           <div>
@@ -158,11 +158,12 @@ export function SearchBox() {
         </span>
         {t("availableBeds")}
         <select value={beds} onChange={(event) => setBeds(event.target.value)}>
-          <option value="">{t("anyBeds")}</option>
-          <option value="1">1+</option>
-          <option value="2">2+</option>
-          <option value="3">3+</option>
-          <option value="4">4+</option>
+          <option value="0">{t("allHomes")}</option>
+              <option value="1">1 {t("roomsCount")}</option>
+              <option value="2">2 {t("roomsCount")}</option>
+              <option value="3">3 {t("roomsCount")}</option>
+              <option value="4">4 {t("roomsCount")}</option>
+              <option value="5">5+ {t("roomsCount")}</option>
         </select>
       </label>
       <label className="hide">

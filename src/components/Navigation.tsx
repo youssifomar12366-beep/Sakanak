@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   ChevronDown,
-  Home as HomeIcon,
+  Languages,
   LayoutDashboard,
   Menu,
   Moon,
@@ -13,6 +13,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useStore } from "../store/useStore";
 import { handleSectionNavigation } from "../utils/navigation";
 import { translate } from "../locales";
+import SiteLogo from "./SiteLogo";
 import "../styles/Navigation.css";
 
 export default function Navigation() {
@@ -33,14 +34,11 @@ export default function Navigation() {
   return (
     <header className="nav">
       <Link to="/" className="logo">
-        <span>
-          <HomeIcon size={17} />
-        </span>
-        nest<b>.</b>
+        <SiteLogo />
       </Link>
       <nav className={open ? "open" : ""}>
         <Link to="/">{t("home")}</Link>
-        <Link className="explore-link" to="/apartments">{t("explore")}</Link>
+        <Link className="explore-link" to="/apartments">{t("navExplore")}</Link>
         <a
           href="#how-it-works"
           onClick={(event) => {
@@ -63,6 +61,14 @@ export default function Navigation() {
         >
           {t("owners")}
         </a>
+        <button
+          onClick={lang}
+          className="mobile-nav-link icon mobile-language"
+          aria-label={t("language")}
+          title={t("language")}
+        >
+          {language === "ar" ? "English" : "العربية"}
+        </button>
         {!currentUser && (
           <>
             <Link className="mobile-nav-link" to="/login">
@@ -77,14 +83,25 @@ export default function Navigation() {
       <div className="nav-buttons">
         <button
           onClick={lang}
-          className="icon"
+          className="icon language-toggle"
           aria-label={t("language")}
           title={t("language")}
         >
-          {language === "ar" ? "AR" : "EN"}
+          <Languages size={17} aria-hidden="true" />
         </button>
-        <button onClick={theme} className="icon">
-          {dark ? <Sun size={17} /> : <Moon size={17} />}
+        <button
+          type="button"
+          onClick={theme}
+          className={`theme-toggle${dark ? " is-dark" : ""}`}
+          aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+          aria-pressed={dark}
+        >
+          <span className="theme-toggle-track" aria-hidden="true">
+            <span className="theme-toggle-thumb">
+              <Sun className="theme-toggle-sun" size={14} />
+              <Moon className="theme-toggle-moon" size={14} />
+            </span>
+          </span>
         </button>
         {currentUser && (
           <button

@@ -4,6 +4,7 @@ export type AuthUser = {
   name: string;
   email: string;
   phone?: string;
+  collegeOrWork?: string;
   password?: string;
   role: "STUDENT" | "OWNER" | "BROKER" | "ADMIN";
 };

@@ -12,6 +12,7 @@ import Dashboard from "../pages/DashboardPage";
 import OwnerWorkspace from "../pages/OwnerWorkspace";
 import Apartments from "../pages/Apartments";
 import OwnerApartmentForm from "../pages/OwnerApartmentForm";
+import AdminDashboard from "../pages/AdminDashboard";
 import Navigation from "./Navigation";
 import "../styles/Responsive.css";
 
@@ -46,6 +47,18 @@ export function AppShell() {
           element={<Dashboard favoritesView />}
         />
         <Route
+          path="/owner/favorites"
+          element={<Dashboard owner favoritesView />}
+        />
+        <Route
+          path="/broker/favorites"
+          element={<Dashboard broker favoritesView />}
+        />
+        <Route
+          path="/admin/favorites"
+          element={<Dashboard admin favoritesView />}
+        />
+        <Route
           path="/student/bookings"
           element={<Dashboard bookingsView />}
         />
@@ -73,7 +86,8 @@ export function AppShell() {
           path="/broker/requests"
           element={<OwnerWorkspace title="Client Inquiries" broker />}
         />
-        <Route path="/admin/dashboard" element={<Dashboard admin />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {showApplicationChrome && (

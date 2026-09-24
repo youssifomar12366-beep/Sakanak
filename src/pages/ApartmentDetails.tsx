@@ -3,15 +3,19 @@ import { ArrowLeft, ArrowRight, BedDouble, Check, Home, X } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useStore } from "../store/useStore";
 import { apartmentTitle } from "../utils/apartment";
-import { getAllApartments } from "../utils/apartments";
+import { getPublicApartments } from "../utils/apartments";
 import {
   createBooking,
   createBookingNotification,
   getApartmentBookings,
   getBookings,
+  isBookingApproved,
+  formatBookingDate,
 } from "../utils/bookings";
 import type { BookingType } from "../types";
+import { AMENITIES_LIST } from "../constants";
 import { translate } from "../locales";
+import ImageLightbox from "../components/ImageLightbox";
 import "../styles/ApartmentDetails.css";
 
 export default function ApartmentDetails() {
@@ -19,12 +23,14 @@ export default function ApartmentDetails() {
   const navigate = useNavigate();
   const { language, currentUser } = useStore();
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
-  const apartments = getAllApartments();
+  const apartments = getPublicApartments();
   const home = apartments.find((item) => item.id === +id!) || apartments[0];
   const [selectedBeds, setSelectedBeds] = useState<number[]>([]);
   const [selectedRooms, setSelectedRooms] = useState<number[]>([]);
   const [bookingType, setBookingType] = useState<BookingType>("bed");
+  const [bookingDate, setBookingDate] = useState("");
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [book, setBook] = useState(false);
   const [error, setError] = useState("");
   const [, setBookingVersion] = useState(0);
@@ -32,6 +38,7 @@ export default function ApartmentDetails() {
   const images = home.images?.length ? home.images : [home.image];
   useEffect(() => {
     setActiveImageIndex(0);
+    setLightboxOpen(false);
   }, [home.id]);
   const totalBeds = Math.max(1, home.beds || 1);
   const totalRooms = Math.max(1, home.rooms || 1);
@@ -60,7 +67,7 @@ export default function ApartmentDetails() {
         (booking) =>
           booking.studentId === currentUser.id &&
           booking.apartmentId === home.id &&
-          booking.status === "confirmed",
+          isBookingApproved(booking.status),
       ),
   );
   const selectedQuantity = bookingType === "room" ? selectedRooms.length : selectedBeds.length;
@@ -69,11 +76,26 @@ export default function ApartmentDetails() {
     ? home.price
     : (bookingType === "room" ? roomPrice : bedPrice) * (selectedQuantity || 1);
 
+  const closeLightbox = () => setLightboxOpen(false);
+  const showPreviousImage = () => {
+    setActiveImageIndex((current) => (current - 1 + images.length) % images.length);
+  };
+  const showNextImage = () => {
+    setActiveImageIndex((current) => (current + 1) % images.length);
+  };
+  const openLightbox = () => {
+    setLightboxOpen(true);
+  };
+
   const submitBooking = () => {
     if (!currentUser) {
       navigate("/login", {
         state: { authMessage: t("loginRequired") },
       });
+      return;
+    }
+    if (!bookingDate) {
+      setError(t("selectMoveInDate"));
       return;
     }
     if (bookingType === "bed" && (selectedBeds.length === 0 || selectedBeds.some(isBedUnavailable))) {
@@ -95,6 +117,9 @@ export default function ApartmentDetails() {
       ownerId,
       studentId: currentUser?.id,
       studentName: currentUser?.name,
+      studentEmail: currentUser?.email,
+      studentPhone: currentUser?.phone,
+      collegeOrWork: currentUser?.collegeOrWork,
       bookingType,
       quantity,
       selectedRoom: bookingType === "room" ? selectedRooms[0] : undefined,
@@ -102,6 +127,7 @@ export default function ApartmentDetails() {
       selectedBed: bookingType === "bed" ? selectedBeds[0] : undefined,
       selectedBeds: bookingType === "bed" ? selectedBeds : undefined,
       price: bookingPrice,
+      bookingDate,
       status: "pending",
     });
     createBookingNotification({
@@ -110,6 +136,9 @@ export default function ApartmentDetails() {
       studentId: currentUser?.id,
       title: "لديك طلب حجز جديد",
       studentName: currentUser?.name,
+      studentEmail: currentUser?.email,
+      studentPhone: currentUser?.phone,
+      collegeOrWork: currentUser?.collegeOrWork,
       apartmentTitle: apartmentTitle(home, language),
       bookingType,
       quantity: createdBooking.quantity,
@@ -118,6 +147,7 @@ export default function ApartmentDetails() {
       selectedBed: createdBooking.selectedBed,
       selectedBeds: createdBooking.selectedBeds,
       price: bookingPrice,
+      bookingDate: createdBooking.bookingDate,
       status: "pending",
     });
     setError("");
@@ -134,6 +164,12 @@ export default function ApartmentDetails() {
             className="gallery"
             src={images[activeImageIndex]}
             alt={`${apartmentTitle(home, language)} ${activeImageIndex + 1}`}
+            role="button"
+            tabIndex={0}
+            onClick={openLightbox}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") openLightbox();
+            }}
           />
           {images.length > 1 && (
             <>
@@ -141,11 +177,7 @@ export default function ApartmentDetails() {
                 className="round gallery-nav gallery-nav-prev"
                 type="button"
                 aria-label={t("previousImage")}
-                onClick={() =>
-                  setActiveImageIndex(
-                    (activeImageIndex - 1 + images.length) % images.length,
-                  )
-                }
+                onClick={showPreviousImage}
               >
                 <ArrowLeft size={16} />
               </button>
@@ -153,9 +185,7 @@ export default function ApartmentDetails() {
                 className="round gallery-nav gallery-nav-next"
                 type="button"
                 aria-label={t("nextImage")}
-                onClick={() =>
-                  setActiveImageIndex((activeImageIndex + 1) % images.length)
-                }
+                onClick={showNextImage}
               >
                 <ArrowRight size={16} />
               </button>
@@ -163,6 +193,15 @@ export default function ApartmentDetails() {
           )}
         </div>
       </div>
+      <ImageLightbox
+        images={images}
+        activeImageIndex={activeImageIndex}
+        title={apartmentTitle(home, language)}
+        open={lightboxOpen}
+        onClose={closeLightbox}
+        onActiveImageChange={setActiveImageIndex}
+        labels={{ previous: t("previousImage"), next: t("nextImage"), preview: t("imagePreview"), close: t("closeImage"), zoomIn: t("zoomIn"), zoomOut: t("zoomOut") }}
+      />
       <div className="detail-layout">
         <div>
           <small>{t("verifiedListing")}</small>
@@ -171,7 +210,11 @@ export default function ApartmentDetails() {
           <p className="description">{t("description")}</p>
           {hasConfirmedBooking && <div className="publisher-contact"><strong>{home.publisherRole === "BROKER" ? t("brokerContact") : t("directOwnerContact")}</strong><span>{home.publisherName}</span><a href={`tel:${home.publisherPhone}`}>{home.publisherPhone}</a></div>}
           <h2>{t("whatsIncluded")}</h2>
-          <div className="amenities"><span>WiFi</span><span>Air conditioning</span><span>Private bathroom</span><span>Furnished kitchen</span><span>Security</span><span>Laundry</span></div>
+          <div className="amenities">
+            {AMENITIES_LIST.filter((amenity) => home.amenities.includes(amenity.id)).map((amenity) => (
+              <span key={amenity.id}>{t(amenity.translationKey)}</span>
+            ))}
+          </div>
           <h2>{t("chooseYourRoom")}</h2>
           <div className="room">
             <div><b>{totalRooms} {t("roomUnit")} · {totalBeds} {t("bedUnit")}</b><p className="muted">{t("chooseRoomOrBed")}</p></div>
@@ -183,13 +226,13 @@ export default function ApartmentDetails() {
         <aside className="booking">
           <div className="tabs"><button className={bookingType === "bed" ? "selected" : ""} onClick={() => {setBookingType("bed");setSelectedRooms([]);setError("")}}>{t("bookBed")}</button><button className={bookingType === "room" ? "selected" : ""} onClick={() => {setBookingType("room");setSelectedBeds([]);setError("")}}>{t("bookRoom")}</button><button className={bookingType === "apartment" ? "selected" : ""} onClick={() => {setBookingType("apartment");setSelectedBeds([]);setSelectedRooms([]);setError("")}}>{t("bookApartment")}</button></div>
           <small>{t("startingFromLabel")}</small><h2>{bookingPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })} <small>{t("perMonth")}</small></h2>
-          <label>{t("moveInDateLabel")}<input dir="auto" type="date" defaultValue="2026-09-01" /></label>
+          <label>{t("moveInDateLabel")}<input dir="auto" type="date" value={bookingDate} onChange={(event) => { setBookingDate(event.target.value); setError(""); }} /></label>
           <p>{t("freeToRequest")}</p>
           <button className="btn wide" disabled={bookingType === "apartment" && apartmentUnavailable} onClick={() => {if (!currentUser) {navigate("/login", {state: {authMessage: t("loginRequired")}}); return;} setError("");setBook(true)}}>{t("continueRequest")} <ArrowRight size={15} /></button>
           {error && <p className="form-error" role="alert">{error}</p>}
         </aside>
       </div>
-      {book && <div className="modal-bg"><div className="modal"><button onClick={() => setBook(false)} className="close"><X /></button><div className="success"><Check /></div><small>{t("almostThere")}</small><h2>{t("reviewRequest")}</h2><p className="muted">{t("requesting")} {quantity} {bookingType === "room" ? t(quantity === 1 ? "room" : "roomsCount") : bookingType === "bed" ? t(quantity === 1 ? "bed" : "beds") : t("apartment")} at {apartmentTitle(home, language)}.</p><hr /><p>{t("moveInDateLabel")} <b>September 01, 2026</b></p><p>{t("monthlyPrice")} <b>{bookingPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })} EGP</b></p><label><input dir="auto" type="checkbox" defaultChecked /> {t("bookingTerms")}</label><button className="btn wide" onClick={submitBooking}>{t("sendBooking")}</button></div></div>}
+      {book && <div className="modal-bg"><div className="modal"><button onClick={() => setBook(false)} className="close"><X /></button><div className="success"><Check /></div><small>{t("almostThere")}</small><h2>{t("reviewRequest")}</h2><p className="muted">{t("requesting")} {quantity} {bookingType === "room" ? t(quantity === 1 ? "room" : "roomsCount") : bookingType === "bed" ? t(quantity === 1 ? "bed" : "beds") : t("apartment")} at {apartmentTitle(home, language)}.</p><hr /><p>{t("moveInDateLabel")} <b>{formatBookingDate(bookingDate, language)}</b></p><p>{t("monthlyPrice")} <b>{bookingPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })} EGP</b></p><label><input dir="auto" type="checkbox" defaultChecked /> {t("bookingTerms")}</label><button className="btn wide" onClick={submitBooking}>{t("sendBooking")}</button></div></div>}
     </main>
   );
 }

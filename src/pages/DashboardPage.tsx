@@ -14,6 +14,8 @@ import {
   getBookings,
   getOwnerBookings,
   getStudentNotifications,
+  isBookingApproved,
+  formatBookingDate,
 } from "../utils/bookings";
 import "../styles/DashboardPage.css";
 import type { Booking } from "../types";
@@ -124,6 +126,7 @@ export default function Dashboard({
     [t("myProperties"), "/owner/properties"],
     [t("bookingRequests"), "/owner/requests"],
     [t("notifications"), "/owner/notifications"],
+    [t("myFavorites"), "/owner/favorites"],
     [t("profile"), "/owner/profile"],
   ];
   const brokerLinks = [
@@ -131,6 +134,12 @@ export default function Dashboard({
     [t("listedProperties"), "/broker/properties"],
     [t("addNewListing"), "/broker/properties"],
     [t("clientInquiries"), "/broker/requests"],
+    [t("myFavorites"), "/broker/favorites"],
+    [t("profile"), "/profile"],
+  ];
+  const adminLinks = [
+    [t("overviewLink"), "/admin/dashboard"],
+    [t("myFavorites"), "/admin/favorites"],
     [t("profile"), "/profile"],
   ];
   const studentLinks = [
@@ -141,7 +150,7 @@ export default function Dashboard({
     [t("notifications"), "#"],
     [t("profile"), "/profile"],
   ];
-  const links = owner ? ownerLinks : broker ? brokerLinks : studentLinks;
+  const links = admin ? adminLinks : owner ? ownerLinks : broker ? brokerLinks : studentLinks;
   const studentNotifications = !owner && !broker && !admin
     ? getStudentNotifications(currentUser.id)
     : [];
@@ -235,7 +244,7 @@ export default function Dashboard({
                     (item) => item.id === booking.apartmentId,
                   );
                   const confirmedOwner =
-                    booking.status === "confirmed" &&
+                    isBookingApproved(booking.status) &&
                     apartment?.ownerId === booking.ownerId;
                   return (
                     <div className="booking-row" key={booking.bookingId}>
@@ -256,8 +265,11 @@ export default function Dashboard({
                           {bookingLabel(booking, language)} · {booking.price.toLocaleString()} {t("perMonth")}
                         </small>
                         <small>
-                          {t("bookedOn")} {new Date(booking.createdAt).toLocaleDateString()}
+                          {t("moveInDateLabel")} {formatBookingDate(booking.bookingDate, language) || t("notProvided")}
                         </small>
+                        {booking.collegeOrWork && (
+                          <small>{t("collegeOrWork")}: {booking.collegeOrWork}</small>
+                        )}
                         {confirmedOwner ? (
                           <small>
                             {t("ownerContact")}: {apartment.publisherName} · {apartment.publisherPhone}
@@ -331,6 +343,12 @@ export default function Dashboard({
                             <small>
                               {booking.studentName || t("student")} · {bookingLabel(booking, language)}
                             </small>
+                            {booking.collegeOrWork && (
+                              <small>{t("collegeOrWork")}: {booking.collegeOrWork}</small>
+                            )}
+                            {booking.bookingDate && (
+                              <small>{t("moveInDateLabel")}: {formatBookingDate(booking.bookingDate, language)}</small>
+                            )}
                           </span>
                           <em>{bookingStatusLabel(booking.status, language)}</em>
                         </>
@@ -363,6 +381,12 @@ export default function Dashboard({
                         <small>
                           {notification.apartmentTitle} · {notification.quantity || 1} {notification.bookingType === "room" ? t((notification.quantity || 1) === 1 ? "room" : "roomsCount") : notification.bookingType === "bed" ? t((notification.quantity || 1) === 1 ? "bed" : "beds") : t("apartment")}
                         </small>
+                        {notification.collegeOrWork && (
+                          <small>{t("collegeOrWork")}: {notification.collegeOrWork}</small>
+                        )}
+                        {notification.bookingDate && (
+                          <small>{t("moveInDateLabel")}: {formatBookingDate(notification.bookingDate, language)}</small>
+                        )}
                         <small>{notification.price.toLocaleString()} EGP / month · {notification.status}</small>
                       </span>
                       <em>{notification.status}</em>

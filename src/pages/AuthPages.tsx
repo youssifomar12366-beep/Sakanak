@@ -52,13 +52,29 @@ export function Auth({ register = false }: { register?: boolean }) {
         );
         return;
       }
-      go(user.role === "BROKER" ? "/broker/dashboard" : "/");
+      go(
+        user.role === "ADMIN"
+          ? "/admin"
+          : user.role === "BROKER"
+            ? "/broker/dashboard"
+            : "/",
+      );
+      return;
+    }
+    const collegeOrWork = String(form.get("collegeOrWork") || "").trim();
+    if (!collegeOrWork) {
+      setError(
+        isArabic
+          ? "يرجى إدخال الكلية أو جهة العمل."
+          : "Please enter your college or workplace.",
+      );
       return;
     }
     saveRegistration({
       name: String(form.get("name") || ""),
       email: String(form.get("email") || ""),
       phone: String(form.get("phone") || ""),
+      collegeOrWork,
       password: String(form.get("password") || ""),
       role: role || "STUDENT",
     });
@@ -95,6 +111,12 @@ export function Auth({ register = false }: { register?: boolean }) {
                 name="phone"
                 type="tel"
                 placeholder={isArabic ? "رقم الهاتف" : "Phone number"}
+              />
+              <input
+                dir="auto"
+                required
+                name="collegeOrWork"
+                placeholder={isArabic ? "الكلية أو العمل" : "College or workplace"}
               />
               <input
                 dir="auto"

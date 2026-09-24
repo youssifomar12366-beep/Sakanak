@@ -4,7 +4,6 @@ import {
   Heart,
   Home as HomeIcon,
   ShieldCheck,
-  Star,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import type { Apartment } from "../types";
@@ -20,8 +19,26 @@ function PropertyCard({ home }: { home: Apartment }) {
   const title = apartmentTitle(home, language);
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const broker = home.publisherRole === "BROKER";
+  const openDetails = () => navigate(`/apartments/${home.id}`);
+  const handleCardClick = (event: React.MouseEvent<HTMLElement>) => {
+    if ((event.target as HTMLElement).closest("button, a, input, select, textarea")) {
+      return;
+    }
+    openDetails();
+  };
   return (
-    <article className="card">
+    <article
+      className="card"
+      onClick={handleCardClick}
+      onKeyDown={(event) => {
+        if ((event.key === "Enter" || event.key === " ") && event.target === event.currentTarget) {
+          openDetails();
+        }
+      }}
+      role="link"
+      tabIndex={0}
+      aria-label={title}
+    >
       <div className="card-img">
         <img src={home.image} alt={title} />
         <button
@@ -57,14 +74,8 @@ function PropertyCard({ home }: { home: Apartment }) {
       <div className="card-body">
         <div className="row">
           <h3>{title}</h3>
-          <span className="rating">
-            <Star size={13} fill="currentColor" />
-            {home.rating}
-          </span>
         </div>
-        <p className="muted">
-          {home.area}, {home.city} · {t("walkFromUniversity")}
-        </p>
+        <p className="muted">{home.area}, {home.city}</p>
         <div className="meta">
           <span>
             <BedDouble size={14} />

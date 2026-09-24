@@ -50,6 +50,11 @@ function Profile() {
             {currentUser.phone || t("notProvided")}
           </p>
           <p>
+            <strong>{t("collegeOrWork")}</strong>
+            <br />
+            {currentUser.collegeOrWork || t("notProvided")}
+          </p>
+          <p>
             <strong>{t("resident")}</strong>
             <br />
             {currentUser.role}

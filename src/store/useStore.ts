@@ -5,6 +5,14 @@ const AUTH_KEY = "nest.currentUser";
 const USERS_KEY = "nest.mockUsers";
 const FAVORITES_KEY = "nest.favorites";
 const LANGUAGE_KEY = "nest.language";
+const TEMP_ADMIN_EMAIL = "youssifomar123666@gmail.com";
+const temporaryAdmin: User = {
+  id: "user-admin-youssif-test",
+  name: "Youssif Admin",
+  email: TEMP_ADMIN_EMAIL,
+  password: "Youssif@1",
+  role: "ADMIN",
+};
 const defaultUsers: User[] = [
   {
     id: "user-student-001",
@@ -32,7 +40,7 @@ const defaultUsers: User[] = [
   },
   {
     id: "user-admin-001",
-    name: "Nest Admin",
+    name: "Sakanak Admin",
     email: "admin@test.com",
     password: "password",
     role: "ADMIN",
@@ -41,9 +49,18 @@ const defaultUsers: User[] = [
 const savedUsers = (): User[] => {
   try {
     const value = localStorage.getItem(USERS_KEY);
-    return value ? (JSON.parse(value) as User[]) : defaultUsers;
+    const users = value ? (JSON.parse(value) as User[]) : defaultUsers;
+    const hasTemporaryAdmin = users.some(
+      (user) => user.email.toLowerCase() === TEMP_ADMIN_EMAIL,
+    );
+    if (hasTemporaryAdmin) return users;
+    const usersWithTemporaryAdmin = [...users, temporaryAdmin];
+    localStorage.setItem(USERS_KEY, JSON.stringify(usersWithTemporaryAdmin));
+    return usersWithTemporaryAdmin;
   } catch {
-    return defaultUsers;
+    const usersWithTemporaryAdmin = [...defaultUsers, temporaryAdmin];
+    localStorage.setItem(USERS_KEY, JSON.stringify(usersWithTemporaryAdmin));
+    return usersWithTemporaryAdmin;
   }
 };
 let mockUsers: User[] = savedUsers();
@@ -116,6 +133,7 @@ export const useStore = create<Store>((set) => ({
       name: data.name,
       email: data.email,
       phone: data.phone,
+      collegeOrWork: data.collegeOrWork,
       password: data.password,
       role: data.role,
     };

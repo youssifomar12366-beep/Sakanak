@@ -1,25 +1,11 @@
-﻿.nav > .logo {
-  font-size: 0;
-}
-.nav > .logo::after {
-  content: "سكنك";
-  font-size: 24px;
-}
-.nav .logo > a {
-  font-size: 0;
-}
-.nav .logo > a::after {
-  content: "سكنك";
-  font-size: 24px;
-}
-.nav nav a:hover {
+﻿.nav nav a:hover {
   transform: translateY(-1px);
 }
 .nav {
   position: sticky;
-  top: 16px;
+  top: 5px;
   z-index: 60;
-  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   height: 76px;
@@ -40,6 +26,19 @@
   font-weight: 800;
   font-size: 24px;
 }
+.site-logo {
+  display: flex;
+  align-items: center;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+}
+.site-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 .logo span {
   background: var(--green);
   color: #fff;
@@ -57,6 +56,10 @@
   font-size: 13px;
   flex: 1;
 }
+.app.dark .nav nav a,
+.app.dark .nav nav button {
+  color: var(--light-background);
+}
 .nav nav a:hover {
   color: var(--green);
 }
@@ -64,6 +67,72 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+.theme-toggle {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--mint);
+  padding: 3px;
+  width: 54px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--ink);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.2s ease;
+}
+.theme-toggle:hover {
+  border-color: var(--green);
+  transform: translateY(-1px);
+}
+.theme-toggle:active {
+  transform: scale(0.96);
+}
+.theme-toggle-track {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.theme-toggle-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--green);
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.3s ease,
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+.theme-toggle.is-dark .theme-toggle-thumb {
+  transform: translateX(22px);
+  color: var(--light-background);
+}
+.theme-toggle-sun,
+.theme-toggle-moon {
+  grid-area: 1 / 1;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.theme-toggle-moon {
+  opacity: 0;
+  transform: scale(0.65) rotate(-35deg);
+}
+.theme-toggle.is-dark .theme-toggle-sun {
+  opacity: 0;
+  transform: scale(0.65) rotate(35deg);
+}
+.theme-toggle.is-dark .theme-toggle-moon {
+  opacity: 1;
+  transform: scale(1) rotate(0);
 }
 footer .logo {
   color: var(--ink);
@@ -84,6 +153,13 @@ footer .logo {
 }
 .app[dir="rtl"] .logout-link {
   text-align: right;
+}
+@media (max-width: 760px) {
+  .site-logo {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
 }
 .account-menu {
   position: relative;

@@ -1,9 +1,11 @@
 
+import type { TranslationKey } from "../locales/en";
+
 export const AMENITIES_LIST = [
-  { id: "wifi", label: { en: "WiFi", ar: "واي فاي" } },
-  { id: "air-conditioning", label: { en: "Air conditioning", ar: "تكييف" } },
-  { id: "private-bathroom", label: { en: "Private bathroom", ar: "حمام خاص" } },
-  { id: "security", label: { en: "Security", ar: "أمن" } },
-  { id: "natural-gas", label: { en: "Natural Gas", ar: "غاز طبيعي" } },
-  { id: "elevator", label: { en: "Elevator", ar: "أسانسير" } },
-] as const;
+  { id: "wifi", translationKey: "amenityWifi" },
+  { id: "air-conditioning", translationKey: "amenityAirConditioning" },
+  { id: "private-bathroom", translationKey: "amenityPrivateBathroom" },
+  { id: "security", translationKey: "amenitySecurity" },
+  { id: "natural-gas", translationKey: "amenityNaturalGas" },
+  { id: "elevator", translationKey: "amenityElevator" },
+] as const satisfies ReadonlyArray<{ id: string; translationKey: TranslationKey }>;

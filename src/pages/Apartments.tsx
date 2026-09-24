@@ -5,7 +5,7 @@ import type { AllowedGender } from "../types";
 import { AMENITIES_LIST } from "../constants";
 import {
   APARTMENTS_UPDATED_EVENT,
-  getAllApartments,
+  getPublicApartments,
 } from "../utils/apartments";
 import { locationMatches } from "../utils/location";
 import PropertyCard from "../components/PropertyCard";
@@ -30,12 +30,12 @@ function Apartments() {
   const [sort, setSort] = useState("recommended");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [selectedGender, setSelectedGender] = useState<AllowedGender>("any");
-  const [apartments, setApartments] = useState(getAllApartments);
+  const [apartments, setApartments] = useState(getPublicApartments);
   const { language } = useStore();
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
   useEffect(() => {
-    const refreshApartments = () => setApartments(getAllApartments());
+    const refreshApartments = () => setApartments(getPublicApartments());
 
     window.addEventListener(APARTMENTS_UPDATED_EVENT, refreshApartments);
     window.addEventListener("storage", refreshApartments);
@@ -234,7 +234,8 @@ function Apartments() {
               <option value="2">2 {t("roomsCount")}</option>
               <option value="3">3 {t("roomsCount")}</option>
               <option value="4">4 {t("roomsCount")}</option>
-              <option value="5">5+ {t("roomsCount")}</option>
+              <option value="5">5 {t("roomsCount")}</option>
+              <option value="6">6 {t("roomsCount")}</option>
             </select>
           </label>
           <label>
@@ -260,7 +261,7 @@ function Apartments() {
                   checked={selectedAmenities.includes(amenity.id)}
                   onChange={() => toggleAmenity(amenity.id)}
                 />
-                {amenity.label[language]}
+                {t(amenity.translationKey)}
               </label>
             ))}
           </div>

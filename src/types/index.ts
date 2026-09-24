@@ -3,6 +3,7 @@ export type Language = "ar" | "en";
 
 export type Apartment = {
   id: number;
+  status?: "pending" | "approved" | "rejected";
   buildingNumber: string;
   floorNumber: string | number;
   city: string;
@@ -31,6 +32,7 @@ export type User = {
   name: string;
   email: string;
   phone?: string;
+  collegeOrWork?: string;
   password?: string;
   role: UserRole;
 };
@@ -39,6 +41,7 @@ export type RegistrationData = {
   name: string;
   email: string;
   phone: string;
+  collegeOrWork?: string;
   password: string;
   role: UserRole;
 };
@@ -80,6 +83,9 @@ export type Booking = {
   ownerId: string;
   studentId?: string;
   studentName?: string;
+  studentEmail?: string;
+  studentPhone?: string;
+  collegeOrWork?: string;
   bookingType: BookingType;
   quantity: number;
   selectedRoom?: number;
@@ -87,8 +93,9 @@ export type Booking = {
   selectedBed?: number;
   selectedBeds?: number[];
   price: number;
+  bookingDate?: string;
   createdAt: string;
-  status: "pending" | "confirmed" | "rejected";
+  status: "pending" | "confirmed" | "approved" | "rejected";
 };
 
 export type BookingNotification = {
@@ -98,6 +105,9 @@ export type BookingNotification = {
   studentId?: string;
   title: string;
   studentName?: string;
+  studentEmail?: string;
+  studentPhone?: string;
+  collegeOrWork?: string;
   apartmentTitle: string;
   bookingType: BookingType;
   quantity: number;
@@ -106,6 +116,7 @@ export type BookingNotification = {
   selectedBed?: number;
   selectedBeds?: number[];
   price: number;
+  bookingDate?: string;
   createdAt: string;
-  status: "pending" | "confirmed" | "rejected";
+  status: "pending" | "confirmed" | "approved" | "rejected";
 };

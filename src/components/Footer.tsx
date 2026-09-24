@@ -1,8 +1,8 @@
-import { Home as HomeIcon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { handleSectionNavigation } from "../utils/navigation";
 import { useStore } from "../store/useStore";
 import { translate } from "../locales";
+import SiteLogo from "./SiteLogo";
 import "../styles/Footer.css";
 
 function Footer() {
@@ -13,10 +13,7 @@ function Footer() {
   return (
     <footer>
       <div className="logo">
-        <span>
-          <HomeIcon size={17} />
-        </span>
-        سكنك
+        <SiteLogo />
       </div>
       <p>{language === "ar" ? "سكن طلابي صُمم بعناية." : "Student housing, thoughtfully made."}</p>
       <button
@@ -39,6 +36,7 @@ function Footer() {
         © 2026 سكنك |{" "}
         <span className="developer-credit">
           تم تنفيذه بواسطة مهندس يوسف الريدي
+          
         </span>
       </small>
     </footer>

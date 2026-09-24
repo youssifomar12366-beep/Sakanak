@@ -6,7 +6,9 @@ import { translate } from "../locales";
 import {
   createBookingNotification,
   getOwnerBookings,
+  isBookingApproved,
   updateBooking,
+  formatBookingDate,
 } from "../utils/bookings";
 import "../styles/DashboardPage.css";
 
@@ -51,6 +53,9 @@ export default function BookingRequests({ user }: { user: User }) {
             ? "تم قبول طلب الحجز الخاص بك"
             : "تم رفض طلب الحجز الخاص بك",
         studentName: booking.studentName,
+        studentEmail: booking.studentEmail,
+        studentPhone: booking.studentPhone,
+        collegeOrWork: booking.collegeOrWork,
         apartmentTitle: booking.apartmentTitle,
         bookingType: booking.bookingType,
         quantity: booking.quantity,
@@ -59,6 +64,7 @@ export default function BookingRequests({ user }: { user: User }) {
         selectedBed: booking.selectedBed,
         selectedBeds: booking.selectedBeds,
         price: booking.price,
+        bookingDate: booking.bookingDate,
         status,
       });
     }
@@ -82,9 +88,16 @@ export default function BookingRequests({ user }: { user: User }) {
               <small>
                 {booking.studentName || t("student")} · {bookingLabel(booking, language)}
               </small>
+              {booking.collegeOrWork && (
+                <small>{t("collegeOrWork")}: {booking.collegeOrWork}</small>
+              )}
+              {isBookingApproved(booking.status) && booking.studentPhone && (
+                <small>{t("phone")}: {booking.studentPhone}</small>
+              )}
               <small>
                 {booking.price.toLocaleString()} {t("perMonth")} · {t(booking.status)}
               </small>
+              {booking.bookingDate && <small>{t("moveInDateLabel")}: {formatBookingDate(booking.bookingDate, language)}</small>}
             </span>
             {booking.status === "pending" ? (
               <span>

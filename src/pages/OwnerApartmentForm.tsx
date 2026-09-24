@@ -60,6 +60,7 @@ function OwnerApartmentForm({ broker = false }: { broker?: boolean }) {
     const form = new FormData(event.currentTarget);
     const property: Apartment = {
       id: Date.now(),
+      status: "pending",
       buildingNumber: String(form.get("buildingNumber")),
       floorNumber: String(form.get("floorNumber")),
       city: String(form.get("city")),
@@ -186,6 +187,7 @@ function OwnerApartmentForm({ broker = false }: { broker?: boolean }) {
               />
             </label>
           </div>
+         
           <label className="form-field-label">
             {t("residentGender")}
             <select
@@ -206,17 +208,19 @@ function OwnerApartmentForm({ broker = false }: { broker?: boolean }) {
               </option>
             </select>
           </label>
+          
+
           <div className="checks">
             <b>{t("amenities")}</b>
             {AMENITIES_LIST.map((amenity) => (
-              <label key={amenity.id}>
+              <label key={amenity.id} className="form-field-label">
                 <input
                   dir="auto"
                   type="checkbox"
                   checked={amenities.includes(amenity.id)}
                   onChange={() => toggleAmenity(amenity.id)}
                 />
-                {amenity.label[language]}
+                {t(amenity.translationKey)}
               </label>
             ))}
           </div>

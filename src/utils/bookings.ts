@@ -4,6 +4,20 @@ const BOOKINGS_KEY = "nest.bookings";
 const NOTIFICATIONS_KEY = "nest.notifications";
 export const BOOKINGS_UPDATED_EVENT = "nest:bookings-updated";
 
+export const formatBookingDate = (date: string | undefined, language: "ar" | "en") => {
+  if (!date) return "";
+  const [year, month, day] = date.split("-").map(Number);
+  if (!year || !month || !day) return date;
+  return new Intl.DateTimeFormat(language === "ar" ? "ar-EG" : "en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(year, month - 1, day));
+};
+
+export const isBookingApproved = (status: Booking["status"]): boolean =>
+  status === "confirmed" || status === "approved";
+
 const readList = <T,>(key: string): T[] => {
   try {
     const value = localStorage.getItem(key);
@@ -23,7 +37,7 @@ export const getApartmentBookings = (apartmentId: number): Booking[] =>
   getBookings().filter(
     (booking) =>
       booking.apartmentId === apartmentId &&
-      (booking.status === "pending" || booking.status === "confirmed"),
+      (booking.status === "pending" || isBookingApproved(booking.status)),
   );
 
 export const getOwnerBookings = (ownerId: string): Booking[] =>

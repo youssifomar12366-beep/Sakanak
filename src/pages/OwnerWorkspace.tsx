@@ -81,6 +81,12 @@ export default function OwnerWorkspace({
                     <small>
                       {notification.quantity || 1} {notification.bookingType === "room" ? t((notification.quantity || 1) === 1 ? "room" : "roomsCount") : notification.bookingType === "bed" ? t((notification.quantity || 1) === 1 ? "bed" : "beds") : t("apartment")} · {notification.price.toLocaleString()} EGP · Pending
                     </small>
+                    {notification.collegeOrWork && (
+                      <small>{t("collegeOrWork")}: {notification.collegeOrWork}</small>
+                    )}
+                    {notification.status === "confirmed" || notification.status === "approved" ? (
+                      notification.studentPhone && <small>{t("phone")}: {notification.studentPhone}</small>
+                    ) : null}
                   </span>
                   <em>Pending</em>
                 </div>

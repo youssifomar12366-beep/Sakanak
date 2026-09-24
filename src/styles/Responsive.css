@@ -10,6 +10,8 @@
 }
 @media (max-width: 850px) {
   .nav {
+    width: 100%;
+    max-width: 100%;
     padding: 0 20px;
   }
   .nav nav {
@@ -21,17 +23,24 @@
   .nav nav:not(.open) > a:not(.explore-link) {
     display: none;
   }
+  .nav nav:not(.open) > .mobile-language {
+    display: none;
+  }
   .nav nav.open {
     position: absolute;
     top: 68px;
     left: 15px;
     right: 15px;
+    max-width: 100%;
     padding: 15px;
     background: var(--paper);
     border: 1px solid var(--line);
     border-radius: 8px;
     flex-direction: column;
     gap: 14px;
+  }
+  .nav nav .mobile-language {
+    display: none;
   }
   .mobile-nav-link {
     display: block;
@@ -90,12 +99,22 @@
     gap: 20px;
   }
 }
+@media (max-width: 767px) {
+  .nav nav .mobile-language {
+    display: block;
+    font-size: inherit;
+  }
+}
 @media (max-width: 520px) {
   .nav {
     height: 64px;
   }
   .icon {
     font-size: 0;
+  }
+  .nav nav .mobile-language {
+    display: block;
+    font-size: inherit;
   }
   .nav-buttons > .icon:first-child {
     font-size: 11px;
