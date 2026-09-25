@@ -1,9 +1,17 @@
+import type {
+  ApartmentStatus,
+  AvailabilityStatus,
+  BedStatus,
+  BookingStatus,
+  RoomStatus,
+} from "../constants/statuses";
+
 export type AllowedGender = "females" | "males" | "any";
 export type Language = "ar" | "en";
 
 export type Apartment = {
   id: number;
-  status?: "pending" | "approved" | "rejected";
+  status?: ApartmentStatus;
   buildingNumber: string;
   floorNumber: string | number;
   city: string;
@@ -59,6 +67,45 @@ export type Store = {
   logout: () => void;
 };
 
+export type AuthToken = string;
+
+export type AuthSession = {
+  user: User;
+  token?: AuthToken;
+};
+
+export type Permission =
+  | "booking:create"
+  | "booking:manage"
+  | "apartment:manage"
+  | "user:manage"
+  | "message:send";
+
+export type Room = {
+  number: number;
+  beds: number[];
+  status?: RoomStatus;
+};
+
+export type Bed = {
+  number: number;
+  roomNumber: number;
+  status: BedStatus;
+  bookingId?: string;
+};
+
+export type Availability = {
+  apartmentId: number;
+  rooms: Room[];
+  beds: Bed[];
+  status: AvailabilityStatus;
+};
+
+export type Favorite = {
+  userId: string;
+  apartmentId: number;
+};
+
 export type AppText = {
   home: string;
   explore: string;
@@ -95,7 +142,27 @@ export type Booking = {
   price: number;
   bookingDate?: string;
   createdAt: string;
-  status: "pending" | "confirmed" | "approved" | "rejected";
+  status: BookingStatus;
+};
+
+export type BookingRequest = Booking;
+
+export type PasswordResetRequest = {
+  identifier: string;
+  verificationCode: string;
+  newPassword: string;
+};
+
+export type VerificationCode = {
+  identifier: string;
+  code: string;
+  expiresAt?: string;
+};
+
+export type ImageUpload = {
+  name: string;
+  type: string;
+  data: string;
 };
 
 export type BookingNotification = {
@@ -118,5 +185,6 @@ export type BookingNotification = {
   price: number;
   bookingDate?: string;
   createdAt: string;
-  status: "pending" | "confirmed" | "approved" | "rejected";
+  status: BookingStatus;
+  read?: boolean;
 };

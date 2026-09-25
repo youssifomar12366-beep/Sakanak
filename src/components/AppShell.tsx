@@ -7,7 +7,7 @@ import Footer from "./Footer";
 import NotFound from "./NotFound";
 import { Home } from "../pages/HomePage";
 import ApartmentDetails from "../pages/ApartmentDetails";
-import { Auth } from "../pages/AuthPages";
+import { Auth, ResetPassword } from "../pages/AuthPages";
 import Dashboard from "../pages/DashboardPage";
 import OwnerWorkspace from "../pages/OwnerWorkspace";
 import Apartments from "../pages/Apartments";
@@ -19,7 +19,10 @@ import "../styles/Responsive.css";
 export function AppShell() {
   const { dark, language } = useStore();
   const { pathname } = useLocation();
-  const authScreen = pathname === "/register" || pathname === "/login";
+  const authScreen =
+    pathname === "/register" ||
+    pathname === "/login" ||
+    pathname === "/reset-password";
   const showApplicationChrome = !authScreen;
 
   useEffect(() => {
@@ -38,6 +41,7 @@ export function AppShell() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Auth register />} />
         <Route path="/login" element={<Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/apartments" element={<Apartments />} />
         <Route path="/apartments/:id" element={<ApartmentDetails />} />
         <Route path="/profile" element={<Profile />} />
@@ -62,6 +66,10 @@ export function AppShell() {
           path="/student/bookings"
           element={<Dashboard bookingsView />}
         />
+        <Route
+          path="/student/notifications"
+          element={<Dashboard notificationsView />}
+        />
         <Route path="/owner/dashboard" element={<Dashboard owner />} />
         <Route
           path="/owner/properties"
@@ -74,10 +82,14 @@ export function AppShell() {
         />
         <Route
           path="/owner/notifications"
-          element={<OwnerWorkspace title="Notifications" />}
+          element={<Dashboard owner notificationsView />}
         />
         <Route path="/owner/profile" element={<Profile />} />
         <Route path="/broker/dashboard" element={<Dashboard broker />} />
+        <Route
+          path="/broker/notifications"
+          element={<Dashboard broker notificationsView />}
+        />
         <Route
           path="/broker/properties"
           element={<OwnerApartmentForm broker />}

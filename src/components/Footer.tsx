@@ -15,7 +15,7 @@ function Footer() {
       <div className="logo">
         <SiteLogo />
       </div>
-      <p>{language === "ar" ? "سكن طلابي صُمم بعناية." : "Student housing, thoughtfully made."}</p>
+      <p>{t("studentHousingTagline")}</p>
       <button
         className="footer-how-link"
         onClick={() =>
@@ -35,7 +35,7 @@ function Footer() {
       <small>
         © 2026 سكنك |{" "}
         <span className="developer-credit">
-          تم تنفيذه بواسطة مهندس يوسف الريدي
+          {t("developerCredit")}
           
         </span>
       </small>

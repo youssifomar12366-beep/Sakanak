@@ -1,4 +1,5 @@
 import type { User } from "../types";
+import { translate } from "../locales";
 
 function WelcomeHeader({
   user,
@@ -7,20 +8,14 @@ function WelcomeHeader({
   user: User;
   language: "en" | "ar";
 }) {
+  const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const isOwner = user.role === "OWNER";
-  const greeting = language === "ar" ? "مرحبًا بعودتك" : "Welcome back";
-  const subtitle =
-    language === "ar"
-      ? isOwner
-        ? "جاهز تدير شققك وطلبات الحجز؟"
-        : "جاهز تلاقي سكنك الجديد؟"
-      : isOwner
-        ? "Ready to manage your properties?"
-        : "Ready to find your next home?";
+  const greeting = t("welcomeBack");
+  const subtitle = isOwner ? t("ownerWelcomeSubtitle") : t("studentWelcomeSubtitle");
   return (
     <div className="welcome-header">
       <h1>
-        {greeting}, {user.name} 👋
+         {user.name} ,{greeting}👋
       </h1>
       <p className="muted">{subtitle}</p>
     </div>

@@ -3,6 +3,15 @@ import type { Booking, BookingNotification } from "../types";
 const BOOKINGS_KEY = "nest.bookings";
 const NOTIFICATIONS_KEY = "nest.notifications";
 export const BOOKINGS_UPDATED_EVENT = "nest:bookings-updated";
+const ADMIN_MESSAGES_KEY = "nest.admin-messages";
+export const NOTIFICATIONS_UPDATED_EVENT = "nest:notifications-updated";
+
+export type AdminMessage = {
+  messageId: string;
+  userId: string;
+  message: string;
+  createdAt: string;
+};
 
 export const formatBookingDate = (date: string | undefined, language: "ar" | "en") => {
   if (!date) return "";
@@ -102,3 +111,26 @@ export const createBookingNotification = (
 
 export const getOwnerNotifications = (ownerId: string) =>
   getNotifications().filter((notification) => notification.ownerId === ownerId);
+
+export const getAdminMessages = (userId: string): AdminMessage[] =>
+  readList<AdminMessage>(ADMIN_MESSAGES_KEY).filter(
+    (message) => message.userId === userId,
+  );
+
+export const createAdminMessage = (userId: string, message: string): AdminMessage => {
+  const nextMessage: AdminMessage = {
+    messageId: `admin-message-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    userId,
+    message,
+    createdAt: new Date().toISOString(),
+  };
+  localStorage.setItem(
+    ADMIN_MESSAGES_KEY,
+    JSON.stringify([
+      ...readList<AdminMessage>(ADMIN_MESSAGES_KEY),
+      nextMessage,
+    ]),
+  );
+  window.dispatchEvent(new Event(NOTIFICATIONS_UPDATED_EVENT));
+  return nextMessage;
+};

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useStore } from "../store/useStore";
 import { homes } from "../constants/properties";
 import WelcomeHeader from "../components/WelcomeHeader";
@@ -8,15 +8,17 @@ import PropertyCard from "../components/PropertyCard";
 import {
   APARTMENTS_UPDATED_EVENT,
   getAllApartments,
-} from "../utils/apartments";
+} from "../services/apartments/apartmentService";
 import {
   BOOKINGS_UPDATED_EVENT,
+  NOTIFICATIONS_UPDATED_EVENT,
   getBookings,
   getOwnerBookings,
-  getStudentNotifications,
   isBookingApproved,
   formatBookingDate,
-} from "../utils/bookings";
+} from "../services/bookings/bookingService";
+import { getOwnerNotifications, getStudentNotifications } from "../services/notifications/notificationService";
+import { getAdminMessages } from "../services/messages/messageService";
 import "../styles/DashboardPage.css";
 import type { Booking } from "../types";
 import { translate } from "../locales";
@@ -41,14 +43,17 @@ export default function Dashboard({
   admin = false,
   favoritesView = false,
   bookingsView = false,
+  notificationsView = false,
 }: {
   owner?: boolean;
   broker?: boolean;
   admin?: boolean;
   favoritesView?: boolean;
   bookingsView?: boolean;
+  notificationsView?: boolean;
 }) {
   const { currentUser, logout, language, favorites } = useStore();
+  const location = useLocation();
   const navigate = useNavigate();
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
   const [, setStatsVersion] = useState(0);
@@ -56,10 +61,12 @@ export default function Dashboard({
     const refreshStats = () => setStatsVersion((version) => version + 1);
     window.addEventListener(APARTMENTS_UPDATED_EVENT, refreshStats);
     window.addEventListener(BOOKINGS_UPDATED_EVENT, refreshStats);
+    window.addEventListener(NOTIFICATIONS_UPDATED_EVENT, refreshStats);
     window.addEventListener("storage", refreshStats);
     return () => {
       window.removeEventListener(APARTMENTS_UPDATED_EVENT, refreshStats);
       window.removeEventListener(BOOKINGS_UPDATED_EVENT, refreshStats);
+      window.removeEventListener(NOTIFICATIONS_UPDATED_EVENT, refreshStats);
       window.removeEventListener("storage", refreshStats);
     };
   }, [currentUser?.id]);
@@ -68,7 +75,7 @@ export default function Dashboard({
       <Navigate
         to="/login"
         replace
-        state={{ authMessage: "You must sign in first to access this page." }}
+        state={{ authMessage: t("authRequired") }}
       />
     );
   }
@@ -107,6 +114,15 @@ export default function Dashboard({
   const confirmedBookings = ownerBookings.filter(
     (booking) => booking.status === "confirmed",
   );
+  const studentBookings = getBookings().filter(
+    (booking) => booking.studentId === currentUser.id,
+  );
+  const studentPendingBookings = studentBookings.filter(
+    (booking) => booking.status === "pending",
+  );
+  const studentConfirmedBookings = studentBookings.filter((booking) =>
+    isBookingApproved(booking.status),
+  );
   const roleLabel = currentUser.role === "OWNER"
     ? t("apartmentOwnerRole")
     : currentUser.role === "BROKER"
@@ -134,6 +150,7 @@ export default function Dashboard({
     [t("listedProperties"), "/broker/properties"],
     [t("addNewListing"), "/broker/properties"],
     [t("clientInquiries"), "/broker/requests"],
+    [t("notifications"), "/broker/notifications"],
     [t("myFavorites"), "/broker/favorites"],
     [t("profile"), "/profile"],
   ];
@@ -143,17 +160,23 @@ export default function Dashboard({
     [t("profile"), "/profile"],
   ];
   const studentLinks = [
-    [t("overviewLink"), "#"],
+    [t("overviewLink"), "/student/dashboard"],
     [t("searchApartments"), "/apartments"],
     [t("myBookings"), "/student/bookings"],
     [t("myFavorites"), "/student/favorites"],
-    [t("notifications"), "#"],
+    [t("notifications"), "/student/notifications"],
     [t("profile"), "/profile"],
   ];
   const links = admin ? adminLinks : owner ? ownerLinks : broker ? brokerLinks : studentLinks;
   const studentNotifications = !owner && !broker && !admin
     ? getStudentNotifications(currentUser.id)
     : [];
+  const userNotifications = admin
+    ? []
+    : owner || broker
+      ? getOwnerNotifications(currentUser.id)
+      : studentNotifications;
+  const adminMessages = admin ? [] : getAdminMessages(currentUser.id);
 
   return (
     <main className="dashboard">
@@ -173,8 +196,8 @@ export default function Dashboard({
             <span>+</span> {t("addNewApartment")}
           </Link>
         )}
-        {links.map(([label, path], index) => (
-          <Link className={index === 0 ? "active" : ""} to={path} key={label}>
+        {links.map(([label, path]) => (
+          <Link className={location.pathname === path ? "active" : ""} to={path} key={label}>
             {label}
           </Link>
         ))}
@@ -278,7 +301,7 @@ export default function Dashboard({
                             <small>{t("bookingRejected")}</small>
                         ) : (
                           <small>
-                            Owner contact information will be available after your booking is confirmed.
+                            {t("noOwnerContactYet")}
                           </small>
                         )}
                       </span>
@@ -288,21 +311,74 @@ export default function Dashboard({
                 })
             )}
           </div>
+        ) : notificationsView ? (
+          <>
+            <h2>{t("notifications")}</h2>
+            {userNotifications.length === 0 && adminMessages.length === 0 ? (
+              <p className="muted">{t("noNotifications")}</p>
+            ) : (
+              <div className="panel">
+                {userNotifications.map((notification) => (
+                  <div className="booking-row" key={notification.notificationId}>
+                    <span>
+                      <b>{notification.title}</b>
+                      <small>
+                        {notification.studentName || t("student")} · {notification.apartmentTitle}
+                      </small>
+                      <small>
+                        {notification.quantity || 1} {notification.bookingType === "room" ? t((notification.quantity || 1) === 1 ? "room" : "roomsCount") : notification.bookingType === "bed" ? t((notification.quantity || 1) === 1 ? "bed" : "beds") : t("apartment")} · {notification.price.toLocaleString()} {t("perMonth")}
+                      </small>
+                      {notification.collegeOrWork && (
+                        <small>{t("collegeOrWork")}: {notification.collegeOrWork}</small>
+                      )}
+                      {notification.bookingDate && (
+                        <small>{t("moveInDateLabel")}: {formatBookingDate(notification.bookingDate, language)}</small>
+                      )}
+                    </span>
+                    <em>{notification.status}</em>
+                  </div>
+                ))}
+                {adminMessages.map((adminMessage) => (
+                  <div className="booking-row" key={adminMessage.messageId}>
+                    <span>
+                      <b>{t("notifications")}</b>
+                      <small>{adminMessage.message}</small>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         ) : (
           <>
             <div className="stats">
-              <div>
-                <small>{t("totalPropertiesLabel")}</small>
-                <b>{ownerProperties.length}</b>
-              </div>
-              <div>
-                <small>{t("pendingBookingsLabel")}</small>
-                <b>{pendingBookings.length}</b>
-              </div>
-              <div>
-                <small>{t("confirmedBookingsLabel")}</small>
-                <b>{confirmedBookings.length}</b>
-              </div>
+              {owner || broker || admin ? (
+                <>
+                  <div>
+                    <small>{t("totalPropertiesLabel")}</small>
+                    <b>{ownerProperties.length}</b>
+                  </div>
+                  <div>
+                    <small>{t("pendingBookingsLabel")}</small>
+                    <b>{pendingBookings.length}</b>
+                  </div>
+                  <div>
+                    <small>{t("confirmedBookingsLabel")}</small>
+                    <b>{confirmedBookings.length}</b>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <small>{t("pendingBookingsLabel")}</small>
+                    <b>{studentPendingBookings.length}</b>
+                  </div>
+                  <div>
+                    <small>{t("confirmedBookingsLabel")}</small>
+                    <b>{studentConfirmedBookings.length}</b>
+                  </div>
+                </>
+              )}
             </div>
             <div className="panel">
               <h2>{owner || broker ? t("recentRequestsLabel") : t("yourCurrentBooking")}</h2>
@@ -358,10 +434,10 @@ export default function Dashboard({
                 )
               ) : (
                 <div className="booking-row">
-                  <img src={homes[0].image} alt="home" />
+                  <img src={homes[0].image} alt={t("studentHome")} />
                   <span>
-                    <b>The Nook Residence</b>
-                    <small>Room 02 · Bed 01</small>
+                    <b>{t("sampleResidence")}</b>
+                    <small>{t("sampleRoomBed")}</small>
                   </span>
                   <em>{t("pending")}</em>
                 </div>
@@ -387,7 +463,7 @@ export default function Dashboard({
                         {notification.bookingDate && (
                           <small>{t("moveInDateLabel")}: {formatBookingDate(notification.bookingDate, language)}</small>
                         )}
-                        <small>{notification.price.toLocaleString()} EGP / month · {notification.status}</small>
+                        <small>{notification.price.toLocaleString()} {t("perMonth")} · {bookingStatusLabel(notification.status, language)}</small>
                       </span>
                       <em>{notification.status}</em>
                     </div>

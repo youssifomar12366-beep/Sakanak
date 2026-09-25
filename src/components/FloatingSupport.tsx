@@ -18,7 +18,7 @@ function FloatingSupport() {
       >
         <img 
           src={whatsapp} 
-          alt="WhatsApp" 
+          alt={t("whatsappAlt")}
           style={{ width: "100%", height: "100%",  }} 
         />
         <span className="support-tooltip">{t("whatsappSupport")}</span>

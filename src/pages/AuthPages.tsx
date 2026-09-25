@@ -12,6 +12,11 @@ import type { FormEvent } from "react";
 import type { UserRole } from "../types";
 import { useStore } from "../store/useStore";
 import { translate } from "../locales";
+import {
+  resetPassword as resetPasswordLocally,
+  validatePassword,
+  verifyPasswordResetCode,
+} from "../services/authService";
 import "../styles/AuthPages.css";
 
 export function Auth({ register = false }: { register?: boolean }) {
@@ -24,10 +29,10 @@ export function Auth({ register = false }: { register?: boolean }) {
     currentUser,
   } = useStore();
   const [role, setRole] = useState<UserRole | null>(null);
+  const [loginEmail, setLoginEmail] = useState("");
   const [error, setError] = useState(
     (location.state as { authMessage?: string } | null)?.authMessage || "",
   );
-  const isArabic = language === "ar";
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
 
   if (currentUser) return <Navigate to="/" replace />;
@@ -37,7 +42,7 @@ export function Auth({ register = false }: { register?: boolean }) {
     const form = new FormData(event.currentTarget);
     if (register && !role) {
       setError(
-        isArabic ? "يرجى اختيار نوع الحساب." : "Please select an account type.",
+        t("selectAccountTypeError"),
       );
       return;
     }
@@ -48,7 +53,7 @@ export function Auth({ register = false }: { register?: boolean }) {
       );
       if (!user) {
         setError(
-          isArabic ? "بيانات الدخول غير صحيحة." : "Invalid email or password.",
+          t("invalidCredentials"),
         );
         return;
       }
@@ -64,9 +69,7 @@ export function Auth({ register = false }: { register?: boolean }) {
     const collegeOrWork = String(form.get("collegeOrWork") || "").trim();
     if (!collegeOrWork) {
       setError(
-        isArabic
-          ? "يرجى إدخال الكلية أو جهة العمل."
-          : "Please enter your college or workplace.",
+        t("collegeRequiredError"),
       );
       return;
     }
@@ -96,34 +99,34 @@ export function Auth({ register = false }: { register?: boolean }) {
                 dir="auto"
                 required
                 name="name"
-                placeholder={isArabic ? "الاسم الكامل" : "Full name"}
+                placeholder={t("fullName")}
               />
               <input
                 dir="auto"
                 required
                 name="email"
                 type="email"
-                placeholder={isArabic ? "البريد الإلكتروني" : "Email address"}
+                placeholder={t("email")}
               />
               <input
                 dir="auto"
                 required
                 name="phone"
                 type="tel"
-                placeholder={isArabic ? "رقم الهاتف" : "Phone number"}
+                placeholder={t("phone")}
               />
               <input
                 dir="auto"
                 required
                 name="collegeOrWork"
-                placeholder={isArabic ? "الكلية أو العمل" : "College or workplace"}
+                placeholder={t("collegeOrWork")}
               />
               <input
                 dir="auto"
                 required
                 name="password"
                 type="password"
-                placeholder={isArabic ? "كلمة المرور" : "Password"}
+                placeholder={t("password")}
               />
               <section
                 className="account-type"
@@ -207,6 +210,8 @@ export function Auth({ register = false }: { register?: boolean }) {
                 required
                 name="email"
                 type="email"
+                value={loginEmail}
+                onChange={(event) => setLoginEmail(event.target.value)}
                 placeholder={t("email")}
               />
               <input
@@ -227,12 +232,113 @@ export function Auth({ register = false }: { register?: boolean }) {
             {register ? t("createAccount") : t("sign")} <ArrowRight size={15} />
           </button>
         </form>
+        {!register && (
+          <Link
+            className="back"
+            to="/reset-password"
+            state={{ identifier: loginEmail.trim() }}
+          >
+            {t("forgotPassword")}
+          </Link>
+        )}
         <p className="muted">
           {register ? t("alreadyHaveAccount") : t("newToSakanak")}{" "}
           <Link to={register ? "/login" : "/register"}>
             {register ? t("sign") : t("createAccount")}
           </Link>
         </p>
+      </div>
+    </main>
+  );
+}
+
+export function ResetPassword() {
+  const location = useLocation();
+  const language = useStore((state) => state.language);
+  const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
+  const identifier =
+    (location.state as { identifier?: string } | null)?.identifier || "";
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const verificationCode = String(form.get("verificationCode") || "").trim();
+    const newPassword = String(form.get("newPassword") || "");
+    const confirmPassword = String(form.get("confirmPassword") || "");
+    if (!verificationCode) {
+      setError(t("verificationCodeRequired"));
+      return;
+    }
+    if (!newPassword || !validatePassword(newPassword)) {
+      setError(t("newPasswordRequired"));
+      return;
+    }
+    if (!confirmPassword) {
+      setError(t("confirmPasswordRequired"));
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError(t("passwordsDoNotMatch"));
+      return;
+    }
+    if (
+      !identifier ||
+      !verifyPasswordResetCode(identifier, verificationCode) ||
+      !resetPasswordLocally(identifier, verificationCode, newPassword)
+    ) {
+      setError(t("invalidVerificationCode"));
+      return;
+    }
+    setError("");
+    setSuccess(true);
+  };
+
+  return (
+    <main className="auth">
+      <div>
+        <small>{t("welcomeToSakanak")}</small>
+        <h1>{t("resetPasswordTitle")}</h1>
+        {!success ? (
+          <form onSubmit={submit}>
+            <input
+              dir="auto"
+              required
+              name="verificationCode"
+              inputMode="numeric"
+              placeholder={t("verificationCode")}
+            />
+            <input
+              dir="auto"
+              required
+              name="newPassword"
+              type="password"
+              placeholder={t("newPassword")}
+            />
+            <input
+              dir="auto"
+              required
+              name="confirmPassword"
+              type="password"
+              placeholder={t("confirmPassword")}
+            />
+            {error && <p className="role-error" role="alert">{error}</p>}
+            <button className="btn wide" type="submit">
+              {t("changePassword")} <ArrowRight size={15} />
+            </button>
+          </form>
+        ) : (
+          <>
+            <p className="form-success" role="status">{t("passwordChangedSuccessfully")}</p>
+            <Link className="btn wide" to="/login">
+              {t("backToLogin")}
+            </Link>
+          </>
+        )}
+        {!success && (
+          <Link className="back" to="/login">{t("backToLogin")}</Link>
+        )}
       </div>
     </main>
   );
@@ -289,11 +395,7 @@ export function ImageUploader({
       (file) => !["image/png", "image/jpeg", "image/webp"].includes(file.type),
     );
     if (invalidFile) {
-      setError(
-        language === "ar"
-          ? "يسمح فقط بصور PNG وJPG وWEBP."
-          : "Only PNG, JPG, and WEBP images are allowed.",
-      );
+      setError(t("allImagesAllowed"));
       return;
     }
     const existingTotalBytes = imageSizes.reduce(
@@ -309,10 +411,7 @@ export function ImageUploader({
         (existingTotalBytes + selectedTotalBytes) /
         (1024 * 1024)
       ).toFixed(2);
-      const message =
-        language === "ar"
-          ? `إجمالي حجم الصور ${totalMegabytes}MB، والحد الأقصى هو 10MB.`
-          : `The total image size is ${totalMegabytes}MB. The maximum is 10MB.`;
+      const message = t("imageSizeLimit").replace("{size}", totalMegabytes);
       setError(message);
       console.error(message);
       return;

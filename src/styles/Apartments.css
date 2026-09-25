@@ -6,8 +6,16 @@
   padding-top: 18px;
 }
 .checks label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   color: var(--muted);
   font-size: 12px;
+}
+.checks label input[type="checkbox"] {
+  width: auto;
+  flex: 0 0 auto;
+  margin: 0;
 }
 .listing,
 .details,

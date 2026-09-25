@@ -6,7 +6,7 @@ import type { AllowedGender, Apartment } from "../types";
 import { AMENITIES_LIST } from "../constants";
 import { useStore } from "../store/useStore";
 import { translate } from "../locales";
-import { saveApartment } from "../utils/apartments";
+import { createApartment as saveApartment } from "../services/apartments/apartmentService";
 import { ImageUploader } from "./AuthPages";
 import "../styles/OwnerApartmentForm.css";
 
@@ -24,7 +24,7 @@ function OwnerApartmentForm({ broker = false }: { broker?: boolean }) {
       <Navigate
         to="/login"
         replace
-        state={{ authMessage: "You must sign in first to access this page." }}
+        state={{ authMessage: t("authRequired") }}
       />
     );
   }
@@ -112,7 +112,7 @@ function OwnerApartmentForm({ broker = false }: { broker?: boolean }) {
               dir="auto"
               required
               name="buildingNumber"
-              placeholder="14B"
+              placeholder={t("buildingNumber")}
             />
           </label>
           <label className="form-field-label">
@@ -122,7 +122,7 @@ function OwnerApartmentForm({ broker = false }: { broker?: boolean }) {
               required
               name="floorNumber"
               type="text"
-              placeholder="3"
+              placeholder={t("floorNumber")}
             />
           </label>
           <label className="form-field-label">

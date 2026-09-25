@@ -17,4 +17,15 @@
 	display: inline-block;
 	margin-top: 10px;
 }
+.owner-form-page .checks label {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+}
+.owner-form-page .checks label input[type="checkbox"] {
+	display: inline-block;
+	width: auto;
+	flex: 0 0 auto;
+	margin: 0;
+}
 

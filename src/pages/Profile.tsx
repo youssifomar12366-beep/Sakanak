@@ -11,7 +11,7 @@ function Profile() {
       <Navigate
         to="/login"
         replace
-        state={{ authMessage: "You must sign in first to access this page." }}
+        state={{ authMessage: t("authRequired") }}
       />
     );
   }

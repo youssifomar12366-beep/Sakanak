@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useStore } from "../store/useStore";
 import { translate } from "../locales";
-import { getOwnerNotifications } from "../utils/bookings";
+import { getOwnerNotifications } from "../services/notifications/notificationService";
 import BookingRequests from "../components/BookingRequests";
 import "../styles/AuthPages.css";
 import "../styles/DashboardPage.css";
@@ -11,7 +11,7 @@ import {
   APARTMENTS_UPDATED_EVENT,
   deleteApartment,
   readStoredApartments,
-} from "../utils/apartments";
+} from "../services/apartments/apartmentService";
 
 export default function OwnerWorkspace({
   title,
@@ -45,7 +45,7 @@ export default function OwnerWorkspace({
       <Navigate
         to="/login"
         replace
-        state={{ authMessage: "You must sign in first to access this page." }}
+        state={{ authMessage: t("authRequired") }}
       />
     );
   }
@@ -65,7 +65,7 @@ export default function OwnerWorkspace({
     return (
       <main className="auth">
         <div>
-          <small>OWNER WORKSPACE</small>
+          <small>{currentUser.role === "BROKER" ? t("brokerWorkspaceLabel") : t("ownerWorkspace")}</small>
           <h1>{displayTitle}</h1>
           <div className="panel">
             {notifications.length === 0 ? (
@@ -76,10 +76,10 @@ export default function OwnerWorkspace({
                   <span>
                     <b>{notification.title}</b>
                     <small>
-                      {notification.studentName || "Student"} · {notification.apartmentTitle}
+                      {notification.studentName || t("student")} · {notification.apartmentTitle}
                     </small>
                     <small>
-                      {notification.quantity || 1} {notification.bookingType === "room" ? t((notification.quantity || 1) === 1 ? "room" : "roomsCount") : notification.bookingType === "bed" ? t((notification.quantity || 1) === 1 ? "bed" : "beds") : t("apartment")} · {notification.price.toLocaleString()} EGP · Pending
+                      {notification.quantity || 1} {notification.bookingType === "room" ? t((notification.quantity || 1) === 1 ? "room" : "roomsCount") : notification.bookingType === "bed" ? t((notification.quantity || 1) === 1 ? "bed" : "beds") : t("apartment")} · {notification.price.toLocaleString()} {t("perMonth")} · {t("pending")}
                     </small>
                     {notification.collegeOrWork && (
                       <small>{t("collegeOrWork")}: {notification.collegeOrWork}</small>
@@ -88,7 +88,7 @@ export default function OwnerWorkspace({
                       notification.studentPhone && <small>{t("phone")}: {notification.studentPhone}</small>
                     ) : null}
                   </span>
-                  <em>Pending</em>
+                  <em>{t("pending")}</em>
                 </div>
               ))
             )}
@@ -102,7 +102,7 @@ export default function OwnerWorkspace({
     return (
       <main className="auth">
         <div>
-          <small>OWNER WORKSPACE</small>
+          <small>{currentUser.role === "BROKER" ? t("brokerWorkspaceLabel") : t("ownerWorkspace")}</small>
           <h1>{displayTitle}</h1>
           <BookingRequests user={currentUser} />
           <Link className="btn" to="/owner/dashboard">{t("backDashboard")}</Link>
@@ -114,11 +114,9 @@ export default function OwnerWorkspace({
     return (
       <main className="auth">
         <div>
-          <small>OWNER WORKSPACE</small>
+          <small>{currentUser.role === "BROKER" ? t("brokerWorkspaceLabel") : t("ownerWorkspace")}</small>
           <h1>{displayTitle}</h1>
-          <p className="muted">
-            Manage your student housing activity from one place.
-          </p>
+          <p className="muted">{t("manageHousingActivity")}</p>
           <Link className="btn" to="/owner/dashboard">
             {t("backDashboard")}
           </Link>
@@ -126,7 +124,7 @@ export default function OwnerWorkspace({
       </main>
     );
   const removeProperty = (apartmentId: number) => {
-    if (!window.confirm("Are you sure you want to delete this apartment?")) {
+    if (!window.confirm(t("confirmDeleteApartment"))) {
       return;
     }
     if (deleteApartment(apartmentId, currentUser.id)) {
@@ -139,7 +137,7 @@ export default function OwnerWorkspace({
   return (
     <main className="auth">
       <div>
-        <small>OWNER WORKSPACE</small>
+          <small>{currentUser.role === "BROKER" ? t("brokerWorkspaceLabel") : t("ownerWorkspace")}</small>
         <h1>{t("myProperties")}</h1>
         <p className="muted">
           {t("manageProperties")}

@@ -6,7 +6,7 @@ import { AMENITIES_LIST } from "../constants";
 import {
   APARTMENTS_UPDATED_EVENT,
   getPublicApartments,
-} from "../utils/apartments";
+} from "../services/apartments/apartmentService";
 import { locationMatches } from "../utils/location";
 import PropertyCard from "../components/PropertyCard";
 import LocationInput from "../components/LocationInput";
@@ -197,7 +197,7 @@ function Apartments() {
               }}
             />
             <small>
-              {minPrice.toLocaleString()} - {maxPrice.toLocaleString()} جنيه مصري
+              {minPrice.toLocaleString()} - {maxPrice.toLocaleString()} {t("currencyEgp")}
             </small>
           </label>
           <label>

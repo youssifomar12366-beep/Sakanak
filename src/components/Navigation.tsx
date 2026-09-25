@@ -67,7 +67,7 @@ export default function Navigation() {
           aria-label={t("language")}
           title={t("language")}
         >
-          {language === "ar" ? "English" : "العربية"}
+          {language === "ar" ? t("languageEnglish") : t("languageArabic")}
         </button>
         {!currentUser && (
           <>

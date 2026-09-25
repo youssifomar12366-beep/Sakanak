@@ -1,17 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   ArrowRight,
-  BedDouble,
-  CalendarDays,
   Search,
-  SlidersHorizontal,
   Star,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useStore } from "../store/useStore";
 import { homes } from "../constants/properties";
 import { translate } from "../locales";
-import LocationInput from "../components/LocationInput";
 import PropertyCard from "../components/PropertyCard";
 import "../styles/HomePage.css";
 
@@ -100,79 +96,17 @@ export function Home() {
 export function SearchBox() {
   const { language } = useStore();
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
-  const [q, setQ] = useState("");
-  const [minPrice, setMinPrice] = useState("1000");
-  const [maxPrice, setMaxPrice] = useState("40000");
-  const [beds, setBeds] = useState("");
   const go = useNavigate();
 
   const submit = () => {
     const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    params.set("minPrice", minPrice);
-    params.set("maxPrice", maxPrice);
-    if (beds) params.set("beds", beds);
+    params.set("minPrice", "1000");
+    params.set("maxPrice", "40000");
     go(`/apartments?${params.toString()}`);
   };
 
   return (
     <div className="search-box">
-      <label>
-        <span>
-          <SlidersHorizontal size={16} />
-        </span>
-        {t("explore")}
-        <LocationInput
-          value={q}
-          onChange={setQ}
-          placeholder={
-            t("cityOrArea")
-          }
-        />
-      </label>
-      <label className="price-field">
-        <span>EGP</span>
-        {t("priceRange")}
-        <div className="price-inputs">
-          <input
-            dir="auto"
-            aria-label={t("minPrice")}
-            type="number"
-            min="0"
-            value={minPrice}
-            onChange={(event) => setMinPrice(event.target.value)}
-          />
-          <input
-            dir="auto"
-            aria-label={t("maxPrice")}
-            type="number"
-            min={minPrice}
-            value={maxPrice}
-            onChange={(event) => setMaxPrice(event.target.value)}
-          />
-        </div>
-      </label>
-      <label className="beds-field">
-        <span>
-          <BedDouble size={16} />
-        </span>
-        {t("availableBeds")}
-        <select value={beds} onChange={(event) => setBeds(event.target.value)}>
-          <option value="0">{t("allHomes")}</option>
-              <option value="1">1 {t("roomsCount")}</option>
-              <option value="2">2 {t("roomsCount")}</option>
-              <option value="3">3 {t("roomsCount")}</option>
-              <option value="4">4 {t("roomsCount")}</option>
-              <option value="5">5+ {t("roomsCount")}</option>
-        </select>
-      </label>
-      <label className="hide">
-        <span>
-          <CalendarDays size={16} />
-        </span>
-        {t("moveInDate")}
-        <input dir="auto" placeholder={t("datePlaceholder")} />
-      </label>
       <button className="btn" onClick={submit}>
         <Search size={16} />
         {t("search")}

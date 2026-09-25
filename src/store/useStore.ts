@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import type { Language, RegistrationData, Store, User } from "../types";
+import { authenticateUser, getCurrentUser, logoutUser, registerUser, saveCurrentUser } from "../services/authService";
+import { addFavorite, getUserFavorites, removeFavorite } from "../services/favorites/favoriteService";
 
 const AUTH_KEY = "nest.currentUser";
 const USERS_KEY = "nest.mockUsers";
-const FAVORITES_KEY = "nest.favorites";
 const LANGUAGE_KEY = "nest.language";
 const TEMP_ADMIN_EMAIL = "youssifomar123666@gmail.com";
 const temporaryAdmin: User = {
@@ -63,41 +64,8 @@ const savedUsers = (): User[] => {
     return usersWithTemporaryAdmin;
   }
 };
-let mockUsers: User[] = savedUsers();
-const savedUser = (): User | null => {
-  try {
-    const value = localStorage.getItem(AUTH_KEY);
-    return value ? (JSON.parse(value) as User) : null;
-  } catch {
-    return null;
-  }
-};
-const savedFavorites = (userId: string | undefined): number[] => {
-  if (!userId) return [];
-  try {
-    const value = localStorage.getItem(FAVORITES_KEY);
-    const favorites = value ? (JSON.parse(value) as Record<string, number[]>) : {};
-    return Array.isArray(favorites[userId]) ? favorites[userId] : [];
-  } catch {
-    return [];
-  }
-};
-const saveFavorites = (userId: string, favorites: number[]) => {
-  try {
-    const value = localStorage.getItem(FAVORITES_KEY);
-    const allFavorites = value
-      ? (JSON.parse(value) as Record<string, number[]>)
-      : {};
-    localStorage.setItem(
-      FAVORITES_KEY,
-      JSON.stringify({ ...allFavorites, [userId]: favorites }),
-    );
-  } catch {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify({ [userId]: favorites }));
-  }
-};
-
-const initialUser = savedUser();
+savedUsers();
+const initialUser = getCurrentUser(AUTH_KEY);
 const savedLanguage = (): Language => {
   try {
     return localStorage.getItem(LANGUAGE_KEY) === "en" ? "en" : "ar";
@@ -109,15 +77,14 @@ const savedLanguage = (): Language => {
 export const useStore = create<Store>((set) => ({
   dark: false,
   language: savedLanguage(),
-  favorites: savedFavorites(initialUser?.id),
+  favorites: initialUser ? getUserFavorites(initialUser.id) : [],
   currentUser: initialUser,
   toggle: (id) =>
     set((s) => {
       if (!s.currentUser) return { favorites: s.favorites };
       const favorites = s.favorites.includes(id)
-        ? s.favorites.filter((x) => x !== id)
-        : [...s.favorites, id];
-      saveFavorites(s.currentUser.id, favorites);
+        ? removeFavorite(s.currentUser.id, id)
+        : addFavorite(s.currentUser.id, id);
       return { favorites };
     }),
   theme: () => set((s) => ({ dark: !s.dark })),
@@ -128,41 +95,21 @@ export const useStore = create<Store>((set) => ({
       return { language };
     }),
   register: (data: RegistrationData) => {
-    const user: User = {
-      id: `user-${Date.now()}`,
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      collegeOrWork: data.collegeOrWork,
-      password: data.password,
-      role: data.role,
-    };
-    mockUsers = [
-      ...mockUsers.filter(
-        (item) => item.email.toLowerCase() !== user.email.toLowerCase(),
-      ),
-      user,
-    ];
-    localStorage.setItem(USERS_KEY, JSON.stringify(mockUsers));
-    localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-    set({ currentUser: user, favorites: savedFavorites(user.id) });
+    const user: User = registerUser(data);
+    saveCurrentUser(user, AUTH_KEY);
+    set({ currentUser: user, favorites: getUserFavorites(user.id) });
     return user;
   },
   login: (email, password) => {
-    const user =
-      mockUsers.find(
-        (item) =>
-          item.email.toLowerCase() === email.toLowerCase() &&
-          item.password === password,
-      ) || null;
+    const user = authenticateUser(email, password);
     if (user) {
-      localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-      set({ currentUser: user, favorites: savedFavorites(user.id) });
+      saveCurrentUser(user, AUTH_KEY);
+      set({ currentUser: user, favorites: getUserFavorites(user.id) });
     }
     return user;
   },
   logout: () => {
-    localStorage.removeItem(AUTH_KEY);
+    logoutUser(AUTH_KEY);
     set({ currentUser: null, favorites: [] });
   },
 }));

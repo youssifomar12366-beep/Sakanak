@@ -1,35 +1,19 @@
-import type { Apartment, Booking, User } from "../types";
+import type { Apartment, Booking } from "../types";
 import {
   deleteApartmentAsAdmin,
   getAllApartments,
   updateApartmentStatus,
 } from "../utils/apartments";
 import { getBookings } from "../utils/bookings";
+import { deleteUser, getUsers } from "./users/userService";
 
-const USERS_KEY = "nest.mockUsers";
-const fallbackUsers: User[] = [
-  { id: "user-student-001", name: "Youssif Omar", email: "youssif@test.com", phone: "01000000000", role: "STUDENT" },
-  { id: "user-owner-001", name: "Ahmed Ali", email: "ahmed@test.com", phone: "01000000001", role: "OWNER" },
-  { id: "user-broker-001", name: "Omar Hassan", email: "omar@test.com", phone: "01000000002", role: "BROKER" },
-  { id: "user-admin-001", name: "Sakanak Admin", email: "admin@test.com", role: "ADMIN" },
-];
-
-export const getAdminUsers = (): User[] => {
-  try {
-    const value = localStorage.getItem(USERS_KEY);
-    const users = value ? JSON.parse(value) : fallbackUsers;
-    return Array.isArray(users) ? users : fallbackUsers;
-  } catch {
-    return fallbackUsers;
-  }
-};
+export const getAdminUsers = getUsers;
 
 export const deleteAdminUser = (userId: string): boolean => {
   const users = getAdminUsers();
   const user = users.find((item) => item.id === userId);
   if (!user || user.role === "ADMIN") return false;
-  localStorage.setItem(USERS_KEY, JSON.stringify(users.filter((user) => user.id !== userId)));
-  return true;
+  return deleteUser(userId);
 };
 
 export type AdminApartment = Apartment & { status: "pending" | "approved" | "rejected" };

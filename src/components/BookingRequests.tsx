@@ -9,7 +9,7 @@ import {
   isBookingApproved,
   updateBooking,
   formatBookingDate,
-} from "../utils/bookings";
+} from "../services/bookings/bookingService";
 import "../styles/DashboardPage.css";
 
 function bookingLabel(booking: Booking, language: "ar" | "en") {
@@ -50,8 +50,8 @@ export default function BookingRequests({ user }: { user: User }) {
         studentId: booking.studentId,
         title:
           status === "confirmed"
-            ? "تم قبول طلب الحجز الخاص بك"
-            : "تم رفض طلب الحجز الخاص بك",
+            ? t("bookingAcceptedNotification")
+            : t("bookingRejectedNotification"),
         studentName: booking.studentName,
         studentEmail: booking.studentEmail,
         studentPhone: booking.studentPhone,
