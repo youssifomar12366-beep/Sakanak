@@ -148,13 +148,13 @@ export type Booking = {
 export type BookingRequest = Booking;
 
 export type PasswordResetRequest = {
-  identifier: string;
-  verificationCode: string;
+  email: string;
+  verificationCode?: string;
   newPassword: string;
 };
 
 export type VerificationCode = {
-  identifier: string;
+  email: string;
   code: string;
   expiresAt?: string;
 };

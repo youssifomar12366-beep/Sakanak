@@ -270,6 +270,12 @@ const ar: Record<TranslationKey, string> = {
   invalidVerificationCode: "كود التحقق غير صحيح أو تعذر العثور على الحساب",
   passwordChangedSuccessfully: "تم تغيير كلمة السر بنجاح",
   backToLogin: "العودة إلى تسجيل الدخول",
+  sendVerificationCode: "إرسال كود التحقق",
+  emailRequired: "يرجى إدخال البريد الإلكتروني",
+  invalidEmail: "يرجى إدخال بريد إلكتروني صحيح",
+  accountNotFound: "لا يوجد حساب بهذا البريد الإلكتروني",
+  resetPasswordFailed: "تعذر تغيير كلمة السر. يرجى المحاولة مرة أخرى.",
+  changeEmail: "تغيير البريد الإلكتروني",
 };
 
 export default ar;

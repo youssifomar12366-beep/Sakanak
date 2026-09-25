@@ -13,6 +13,12 @@ import { createUser, getUsers, updateUser } from "./users/userService";
 
 // Development/Test Verification Code. Replace this local adapter with real email/SMS verification from the Backend.
 export const LOCAL_PASSWORD_RESET_CODE = "000000";
+const PASSWORD_RESET_FLOW_KEY = "nest.password-reset-flow";
+
+type LocalPasswordResetFlow = {
+  email: string;
+  verified: boolean;
+};
 
 const wait = (milliseconds = 300) =>
   new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds));
@@ -60,20 +66,43 @@ export const logoutUser = (authKey = "nest.currentUser") => {
   localStorage.removeItem(authKey);
 };
 
-export const requestPasswordReset = (identifier: string) =>
-  getUsers().some((user) => user.email.toLowerCase() === identifier.toLowerCase() || user.phone === identifier);
-
-export const verifyPasswordResetCode = (_identifier: string, verificationCode: string) =>
-  verificationCode === LOCAL_PASSWORD_RESET_CODE;
-
-export function resetPassword(
-  identifier: string,
-  verificationCode: string,
-  newPassword: string,
-): boolean {
-  if (verificationCode !== LOCAL_PASSWORD_RESET_CODE) return false;
-  const user = getUsers().find(
-    (item) => item.email.toLowerCase() === identifier.toLowerCase() || item.phone === identifier,
+export const requestPasswordReset = (email: string): boolean => {
+  const normalizedEmail = email.trim().toLowerCase();
+  const exists = getUsers().some((user) => user.email.toLowerCase() === normalizedEmail);
+  if (!exists) return false;
+  localStorage.setItem(
+    PASSWORD_RESET_FLOW_KEY,
+    JSON.stringify({ email: normalizedEmail, verified: false } satisfies LocalPasswordResetFlow),
   );
-  return Boolean(user && updateUser(user.id, { password: newPassword }));
+  return true;
+};
+
+export const verifyPasswordResetCode = (email: string, verificationCode: string): boolean => {
+  if (verificationCode !== LOCAL_PASSWORD_RESET_CODE) return false;
+  try {
+    const stored = localStorage.getItem(PASSWORD_RESET_FLOW_KEY);
+    const flow = stored ? (JSON.parse(stored) as LocalPasswordResetFlow) : null;
+    if (!flow || flow.email !== email.trim().toLowerCase()) return false;
+    localStorage.setItem(PASSWORD_RESET_FLOW_KEY, JSON.stringify({ ...flow, verified: true }));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export function resetPassword(email: string, newPassword: string): boolean {
+  const normalizedEmail = email.trim().toLowerCase();
+  try {
+    const stored = localStorage.getItem(PASSWORD_RESET_FLOW_KEY);
+    const flow = stored ? (JSON.parse(stored) as LocalPasswordResetFlow) : null;
+    if (!flow || !flow.verified || flow.email !== normalizedEmail) return false;
+  } catch {
+    return false;
+  }
+  const user = getUsers().find(
+    (item) => item.email.toLowerCase() === normalizedEmail,
+  );
+  const updated = Boolean(user && updateUser(user.id, { password: newPassword }));
+  if (updated) localStorage.removeItem(PASSWORD_RESET_FLOW_KEY);
+  return updated;
 }

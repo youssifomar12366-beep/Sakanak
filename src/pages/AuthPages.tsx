@@ -13,6 +13,7 @@ import type { UserRole } from "../types";
 import { useStore } from "../store/useStore";
 import { translate } from "../locales";
 import {
+  requestPasswordReset,
   resetPassword as resetPasswordLocally,
   validatePassword,
   verifyPasswordResetCode,
@@ -236,7 +237,6 @@ export function Auth({ register = false }: { register?: boolean }) {
           <Link
             className="back"
             to="/reset-password"
-            state={{ identifier: loginEmail.trim() }}
           >
             {t("forgotPassword")}
           </Link>
@@ -253,44 +253,45 @@ export function Auth({ register = false }: { register?: boolean }) {
 }
 
 export function ResetPassword() {
-  const location = useLocation();
   const language = useStore((state) => state.language);
   const t = (key: Parameters<typeof translate>[1]) => translate(language, key);
-  const identifier =
-    (location.state as { identifier?: string } | null)?.identifier || "";
+  const [step, setStep] = useState<"email" | "verification">("email");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    if (step === "email") {
+      const nextEmail = String(form.get("email") || "").trim();
+      if (!nextEmail) {
+        setError(t("emailRequired"));
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(nextEmail)) {
+        setError(t("invalidEmail"));
+        return;
+      }
+      if (!requestPasswordReset(nextEmail)) {
+        setError(t("accountNotFound"));
+        return;
+      }
+      setEmail(nextEmail);
+      setError("");
+      setStep("verification");
+      return;
+    }
+
     const verificationCode = String(form.get("verificationCode") || "").trim();
     const newPassword = String(form.get("newPassword") || "");
     const confirmPassword = String(form.get("confirmPassword") || "");
-    if (!verificationCode) {
-      setError(t("verificationCodeRequired"));
-      return;
-    }
-    if (!newPassword || !validatePassword(newPassword)) {
-      setError(t("newPasswordRequired"));
-      return;
-    }
-    if (!confirmPassword) {
-      setError(t("confirmPasswordRequired"));
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setError(t("passwordsDoNotMatch"));
-      return;
-    }
-    if (
-      !identifier ||
-      !verifyPasswordResetCode(identifier, verificationCode) ||
-      !resetPasswordLocally(identifier, verificationCode, newPassword)
-    ) {
-      setError(t("invalidVerificationCode"));
-      return;
-    }
+    if (!verificationCode) return setError(t("verificationCodeRequired"));
+    if (!newPassword || !validatePassword(newPassword)) return setError(t("newPasswordRequired"));
+    if (!confirmPassword) return setError(t("confirmPasswordRequired"));
+    if (newPassword !== confirmPassword) return setError(t("passwordsDoNotMatch"));
+    if (!verifyPasswordResetCode(email, verificationCode)) return setError(t("invalidVerificationCode"));
+    if (!resetPasswordLocally(email, newPassword)) return setError(t("resetPasswordFailed"));
     setError("");
     setSuccess(true);
   };
@@ -302,30 +303,18 @@ export function ResetPassword() {
         <h1>{t("resetPasswordTitle")}</h1>
         {!success ? (
           <form onSubmit={submit}>
-            <input
-              dir="auto"
-              required
-              name="verificationCode"
-              inputMode="numeric"
-              placeholder={t("verificationCode")}
-            />
-            <input
-              dir="auto"
-              required
-              name="newPassword"
-              type="password"
-              placeholder={t("newPassword")}
-            />
-            <input
-              dir="auto"
-              required
-              name="confirmPassword"
-              type="password"
-              placeholder={t("confirmPassword")}
-            />
+            {step === "email" ? (
+              <input dir="auto" required name="email" type="email" placeholder={t("email")} />
+            ) : (
+              <>
+                <input dir="auto" required name="verificationCode" inputMode="numeric" placeholder={t("verificationCode")} />
+                <input dir="auto" required name="newPassword" type="password" placeholder={t("newPassword")} />
+                <input dir="auto" required name="confirmPassword" type="password" placeholder={t("confirmPassword")} />
+              </>
+            )}
             {error && <p className="role-error" role="alert">{error}</p>}
             <button className="btn wide" type="submit">
-              {t("changePassword")} <ArrowRight size={15} />
+              {step === "email" ? t("sendVerificationCode") : t("changePassword")} <ArrowRight size={15} />
             </button>
           </form>
         ) : (
@@ -335,6 +324,11 @@ export function ResetPassword() {
               {t("backToLogin")}
             </Link>
           </>
+        )}
+        {step === "verification" && !success && (
+          <button className="back" type="button" onClick={() => { setStep("email"); setError(""); }}>
+            {t("changeEmail")}
+          </button>
         )}
         {!success && (
           <Link className="back" to="/login">{t("backToLogin")}</Link>

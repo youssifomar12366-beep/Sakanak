@@ -268,6 +268,12 @@ const en = {
   invalidVerificationCode: "The verification code is invalid or the account could not be found",
   passwordChangedSuccessfully: "Password changed successfully",
   backToLogin: "Back to Login",
+  sendVerificationCode: "Send Verification Code",
+  emailRequired: "Please enter your email address",
+  invalidEmail: "Please enter a valid email address",
+  accountNotFound: "No account was found with this email address",
+  resetPasswordFailed: "Unable to reset the password. Please try again.",
+  changeEmail: "Change email",
 } as const;
 
 export default en;
