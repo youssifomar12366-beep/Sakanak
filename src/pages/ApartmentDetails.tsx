@@ -263,7 +263,7 @@ export default function ApartmentDetails() {
 
         </div>
       </div>
-      {currentUser?.role === "STUDENT" && <aside className="booking">
+      {(!currentUser || currentUser.role === "STUDENT") && <aside className="booking">
         <div className="tabs">
           <button className={bookingType === "bed" ? "selected" : ""} onClick={() => {setBookingType("bed");setSelectedRooms([]);setSelectionError("");setError("");setSuccessMessage("")}}>{t("bookBed")}</button>
           <button className={bookingType === "room" ? "selected" : ""} onClick={() => {setBookingType("room");setSelectedBeds([]);setSelectionError("");setError("");setSuccessMessage("")}}>{t("bookRoom")}</button>
@@ -276,7 +276,7 @@ export default function ApartmentDetails() {
         </h2>
         <label>{t("moveInDateLabel")}<input dir="auto" type="date" value={bookingDate} onChange={(event) => { setBookingDate(event.target.value); setBookingDateError(false); setError(""); setSuccessMessage(""); }} />{bookingDateError && <span className="form-error" role="alert">{t("selectMoveInDate")}</span>}{selectionError && <span className="form-error" role="alert">{t("selectBookingOption")}</span>}</label>
         <p>{t("freeToRequest")}</p>
-        <button className="btn wide" disabled={bookingType === "apartment" && apartmentUnavailable} onClick={() => {if (!currentUser) {navigate("/login", {state: {authMessage: t("loginRequired")}}); return;} if (!validateBookingRequirements()) return; setBook(true)}}>{t("continueRequest")} <ArrowRight size={15} /></button>
+        <button className="btn wide" disabled={bookingType === "apartment" && apartmentUnavailable} onClick={() => {if (!currentUser) {navigate("/register"); return;} if (!validateBookingRequirements()) return; setBook(true)}}>{t("continueRequest")} <ArrowRight size={15} /></button>
         {error && <p className="form-error" role="alert">{error}</p>}
         {successMessage && <p className="form-success" role="status">{successMessage}</p>}
       </aside>}
