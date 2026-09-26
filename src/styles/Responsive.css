@@ -105,9 +105,31 @@
     font-size: inherit;
   }
 }
+@media (min-width: 521px) and (max-width: 850px) {
+  .nav-buttons > .login-action {
+    display: inline-flex;
+    padding: 7px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .nav nav .mobile-login-link,
+  .nav nav .mobile-register-link {
+    display: none;
+  }
+}
 @media (max-width: 520px) {
   .nav {
     height: 64px;
+  }
+  .nav-buttons > .login-action {
+    display: inline-flex;
+    padding: 7px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .nav nav .mobile-login-link,
+  .nav nav .mobile-register-link {
+    display: none;
   }
   .icon {
     font-size: 0;

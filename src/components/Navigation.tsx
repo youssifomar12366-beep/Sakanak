@@ -71,10 +71,10 @@ export default function Navigation() {
         </button>
         {!currentUser && (
           <>
-            <Link className="mobile-nav-link" to="/login">
+            <Link className="mobile-nav-link mobile-login-link" to="/login">
               {t("sign")}
             </Link>
-            <Link className="mobile-nav-link" to="/register">
+            <Link className="mobile-nav-link mobile-register-link" to="/register">
               {t("join")}
             </Link>
           </>
@@ -162,7 +162,7 @@ export default function Navigation() {
           </div>
         ) : (
           <>
-            <Link className="sign desktop" to="/login">
+            <Link className="btn desktop login-action" to="/login">
               {t("sign")}
             </Link>
             <Link className="btn desktop" to="/register">
